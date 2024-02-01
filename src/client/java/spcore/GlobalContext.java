@@ -17,7 +17,7 @@ public class GlobalContext {
 
     public static String getUserName()
     {
-        return "Dima5x9";
+        return UserName;
     }
 
     public static String getUuid()
