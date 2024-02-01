@@ -1,5 +1,5 @@
 plugins {
-	id 'fabric-loom' version '1.5-SNAPSHOT'
+	id 'fabric-loom'
 	id 'maven-publish'
 }
 
@@ -16,6 +16,8 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+
 }
 
 loom {
@@ -42,11 +44,13 @@ dependencies {
 	implementation  'com.squareup.okhttp3:okhttp:4.11.0'
 	implementation  'com.squareup.okio:okio-jvm:3.5.0'
 	implementation  'com.squareup.okio:okio:3.5.0'
-	implementation  'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
 	include  'com.squareup.okhttp3:okhttp:4.11.0'
 	include  'com.squareup.okio:okio:3.5.0'
 	include  'com.squareup.okio:okio-jvm:3.5.0'
 	include  'org.jetbrains.kotlin:kotlin-stdlib:1.6.20'
+	modImplementation "net.fabricmc:fabric-language-kotlin:${project.fabric_kotlin_version}"
+
+
 	// Uncomment the following line to enable the deprecated Fabric API modules. 
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 

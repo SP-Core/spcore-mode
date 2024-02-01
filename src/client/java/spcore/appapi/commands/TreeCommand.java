@@ -1,7 +1,7 @@
-package spcore.fabric.commands;
+package spcore.appapi.commands;
 
-import spcore.fabric.commands.commandEngine.CommandEngine;
-import spcore.fabric.spcore.SpCoreApi;
+import spcore.api.SpCoreApi;
+
 import net.minecraft.client.util.SelectionManager;
 
 import java.util.HashMap;
@@ -17,28 +17,22 @@ public class TreeCommand extends BaseCommand{
 
         if(size == 1){
             var action = args.get("1");
-            if(action.equals("multyclick")){
-                PayMultyclick(manager);
+            switch (action) {
+                case "multyclick" -> PayMultyclick(manager);
+                case "limit" -> PayEnergyLimit(manager);
+                case "speed" -> PayRechangingSpeed(manager);
+                case "energy" -> UseEnergy(manager);
             }
-            else if(action.equals("limit")){
-                PayEnergyLimit(manager);
-            }
-            else if(action.equals("speed")){
-                PayRechangingSpeed(manager);
-            }
-            else if(action.equals("energy")){
-                manager.insert("Пока бусты не работают");
-            }
+
         }
         return false;
     }
 
     private void PriceList(SelectionManager manager){
-        SpCoreApi.GetPriceList((p) -> {
+        SpCoreApi.TREE.GetPriceList((p) -> {
             var builder = new StringBuilder();
-            builder.append(CommandEngine.MessageOpenTerminal());
             builder.append("\n");
-            builder.append("balance: ").append(p.balance);
+            builder.append("balance: ").append(p.balance).append("t");
             builder.append("\n");
             builder.append("multyclick: ").append(p.multiclickLevel).append("lvl ").append(p.multiclickLevelPrice).append("t");
             builder.append("\n");
@@ -63,46 +57,59 @@ public class TreeCommand extends BaseCommand{
         }, () -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nОшибка\n");
+            manager.insert("\nОшибка получения данных\n");
         });
     }
 
     private void PayMultyclick(SelectionManager manager){
-        SpCoreApi.PayMulticlickLevel(() -> {
+        SpCoreApi.TREE.PayMulticlickLevel(() -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nУспешно\n");
+            manager.insert( "\nУспешно\n");
 
         }, () -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nНедостаточно койнов\n");
+            manager.insert("\nНедостаточно койнов\n");
         });
     }
 
     private void PayEnergyLimit(SelectionManager manager){
-        SpCoreApi.PayEnergyLimitPrice(() -> {
+        SpCoreApi.TREE.PayEnergyLimitPrice(() -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nУспешно\n");
+            manager.insert("\nУспешно\n");
 
         }, () -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nНедостаточно койнов\n");
+            manager.insert( "\nНедостаточно койнов\n");
         });
     }
 
     private void PayRechangingSpeed(SelectionManager manager){
-        SpCoreApi.PayRechangingSpeed(() -> {
+        SpCoreApi.TREE.PayRechangingSpeed(() -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nУспешно\n");
+            manager.insert( "\nУспешно\n");
 
         }, () -> {
             manager.selectAll();
             manager.delete(-1);
-            manager.insert(CommandEngine.MessageOpenTerminal() + "\nНедостаточно койнов\n");
+            manager.insert( "\nНедостаточно койнов\n");
+        });
+    }
+
+    private void UseEnergy(SelectionManager manager){
+        SpCoreApi.TREE.UseEnergy(() -> {
+            manager.selectAll();
+            manager.delete(-1);
+            manager.insert( "\nУспешно\n");
+
+        }, () -> {
+            manager.selectAll();
+            manager.delete(-1);
+            manager.insert( "\nБусты закончились :(\n");
         });
     }
 

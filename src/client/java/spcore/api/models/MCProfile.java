@@ -1,14 +1,15 @@
-package spcore.fabric.spcore.models;
+package spcore.api.models;
 
 import java.time.OffsetDateTime;
 
-public class TreeProfile {
+public class MCProfile {
     private String userId;
     private OffsetDateTime createAt;
     private InnerData inner;
 
     public static class InnerData {
-        private int balance;
-
+        private String uid;
+        private boolean trackOnline;
+        private OffsetDateTime lastOnlineUpdate;
     }
 }

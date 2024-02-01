@@ -1,4 +1,4 @@
-package spcore.fabric.spcore.models;
+package spcore.api.models;
 
 public class PriceList {
     public int balance;

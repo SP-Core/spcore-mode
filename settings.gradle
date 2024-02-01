@@ -7,4 +7,11 @@ pluginManagement {
 		mavenCentral()
 		gradlePluginPortal()
 	}
+	plugins {
+		id 'fabric-loom' version loom_version
+	}
 }
+include 'modules'
+include 'modules:core'
+findProject(':modules:core')?.name = 'core'
+

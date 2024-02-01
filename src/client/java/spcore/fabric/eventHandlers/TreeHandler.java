@@ -1,7 +1,8 @@
 package spcore.fabric.eventHandlers;
 
-import spcore.fabric.spcore.SpCoreApi;
-import spcore.fabric.spcore.SpCoreTransaction;
+import spcore.api.AuthContext;
+import spcore.api.SpCoreApi;
+import spcore.api.models.TreeTransaction;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SaplingBlock;
@@ -23,12 +24,12 @@ import static net.minecraft.block.SaplingBlock.STAGE;
 public class TreeHandler {
     private static final Object lock = new Object();
 
-    private static SpCoreTransaction ltransaction;
+    private static TreeTransaction ltransaction;
     private static int lastNote = 0;
 
     public static ActionResult Invoke(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult){
 
-        if(!SpCoreApiContext.IsAuthorized){
+        if(!AuthContext.isIsAuthorized()){
             return ActionResult.PASS;
         }
 
@@ -41,10 +42,10 @@ public class TreeHandler {
         BlockState blockState = world.getBlockState(blockPos);
         Block block = blockState.getBlock();
         Integer stage = -1;
-        SpCoreTransaction transaction = null;
+        TreeTransaction transaction = null;
         if(block instanceof SaplingBlock saplingBlock){
             stage = (Integer)blockState.get(STAGE);
-            transaction = new SpCoreTransaction(saplingBlock.getTranslationKey(), blockPos);
+            transaction = new TreeTransaction(saplingBlock.getTranslationKey(), blockPos);
             MinecraftClient mc = MinecraftClient.getInstance();
             if(ltransaction == null || !Objects.equals(ltransaction.toMessage(), transaction.toMessage())){
                 ltransaction = transaction;
@@ -55,7 +56,7 @@ public class TreeHandler {
             }
             player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 1, getPitchFromNote(lastNote));
 
-            SpCoreApi.TreeClick(transaction.toMessage(), stage);
+            SpCoreApi.TREE.TreeClick(transaction.toMessage(), stage);
 
         }
         return ActionResult.PASS;

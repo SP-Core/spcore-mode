@@ -1,7 +1,7 @@
-package spcore.fabric.commands;
+package spcore.appapi.commands;
 
-import spcore.fabric.commands.commandEngine.CommandEngine;
 import net.minecraft.client.util.SelectionManager;
+import spcore.appapi.CommandEngine;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +14,8 @@ public class HelpCommand extends BaseCommand{
 
         for (Map.Entry<String, BaseCommand> command: commands.entrySet()) {
             message.append("\n");
-            message.append(command.getKey()).append(": ").append(command.getValue().GetDescription());
+            message.append(command.getKey())
+                    .append(": ").append(command.getValue().GetDescription());
         }
 
         manager.insert(message.toString());

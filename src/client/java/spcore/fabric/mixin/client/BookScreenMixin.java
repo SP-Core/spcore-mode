@@ -1,41 +1,40 @@
 package spcore.fabric.mixin.client;
 
-import spcore.fabric.SpCore;
-import spcore.fabric.commands.commandEngine.CommandEngine;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.util.SelectionManager;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import spcore.api.AuthContext;
+import spcore.fabric.handlers.TerminalHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Mixin(BookEditScreen.class)
+@Mixin(BookScreen.class)
 public class BookScreenMixin {
 
     @Shadow
-    private List<String> pages;
+    private BookScreen.Contents contents;
 
     @Shadow
-    private SelectionManager currentPageSelectionManager;
+    private int pageIndex;
 
-    @Shadow
-    private int currentPage;
-
-    @Inject(method = "keyPressedEditMode", at = @At("RETURN"))
-    public void onKeyPressedEditMode (int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> ci){
-
-        try{
-            CommandEngine.CurrentPages = pages;
-            CommandEngine.CurrentPageIndex = currentPage;
-            var pageContent = pages.get(currentPage);
-
-            CommandEngine.onKeyDown(keyCode, scanCode, modifiers, pageContent, currentPageSelectionManager);
-        }
-        catch (Exception e){
-            SpCore.LOGGER.info(e.getMessage());
-        }
+    @Inject(method = "init", at = @At("RETURN"))
+    public void onInit (CallbackInfo ci){
+        if(!AuthContext.isIsAuthorized())
+            return;
+        var handler = new TerminalHandler();
+        var mc = MinecraftClient.getInstance();
+        List<String> l = new ArrayList<>();
+        l.add(contents.getPage(pageIndex).getString());
+        handler.invoke(mc.player, null, null, 0, l);
     }
 }

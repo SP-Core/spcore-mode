@@ -3,9 +3,6 @@ package spcore.api;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.network.ClientPlayerEntity;
 import spcore.GlobalContext;
-import spcore.fabric.SpCore;
-import spcore.fabric.spcore.SpCoreApi;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,7 +15,9 @@ public class AuthContext {
     public static String getCode() {
         return Code;
     }
-
+    public static void setCode(String code) {
+        Code = code;
+    }
 
     public static void Logout(){
         IsAuthorized = false;
@@ -34,8 +33,7 @@ public class AuthContext {
             }
             Code = Files.readString(secretPath);
 
-            SpCoreApi.PostIsAuthorized(() -> {
-                IsAuthorized = true;
+            SpCoreApi.AUTH.IsAuthorized(() -> {
                 GlobalContext.LOGGER.info("Authorized success");
             }, () -> {
                 GlobalContext.LOGGER.info("Authorized error");
@@ -46,6 +44,7 @@ public class AuthContext {
             throw new RuntimeException(e);
         }
     }
+
 
     public static void SaveSecret(){
         Path secretPath = FabricLoader.getInstance().getGameDir().resolve(".secret");

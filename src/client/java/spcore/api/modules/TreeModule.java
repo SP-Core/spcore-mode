@@ -4,13 +4,10 @@ import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.client.ObjectMapper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 import spcore.api.SpCoreModule;
-import spcore.fabric.spcore.interfaces.ApiCallback;
-import spcore.fabric.spcore.interfaces.PriceListCallback;
-import spcore.fabric.spcore.models.PriceList;
+import spcore.api.delegates.Action;
+import spcore.api.delegates.PriceListDelegate;
+import spcore.api.models.PriceList;
 
 import java.io.IOException;
 
@@ -41,7 +38,7 @@ public class TreeModule extends SpCoreModule {
         });
     }
 
-    public void GetPriceList(PriceListCallback success, ApiCallback error){
+    public void GetPriceList(PriceListDelegate success, Action error){
 
         var request = CreateGetRequest(b ->{
             b.setPath("api/v1/tree/price-list");
@@ -67,7 +64,7 @@ public class TreeModule extends SpCoreModule {
 
     }
 
-    public void PayMulticlickLevel(ApiCallback success, ApiCallback error){
+    public void PayMulticlickLevel(Action success, Action error){
         var request = CreatePostRequest(b ->{
             b.setPath("api/v1/tree/pay-multiclick");
         }, NoneBody);
@@ -82,7 +79,7 @@ public class TreeModule extends SpCoreModule {
         });
     }
 
-    public void PayEnergyLimitPrice(ApiCallback success, ApiCallback error){
+    public void PayEnergyLimitPrice(Action success, Action error){
         var request = CreatePostRequest(b ->{
             b.setPath("api/v1/tree/pay-energy-limit");
         }, NoneBody);
@@ -97,10 +94,27 @@ public class TreeModule extends SpCoreModule {
         });
     }
 
-    public void PayRechangingSpeed(ApiCallback success, ApiCallback error){
+    public void PayRechangingSpeed(Action success, Action error){
 
         var request = CreatePostRequest(b ->{
             b.setPath("api/v1/tree/pay-rechanging-speed");
+        }, NoneBody);
+
+
+        Send(client.newCall(request.build()), (c, response) ->{
+            if(!response.isSuccessful()){
+                error.invoke();
+                return;
+            }
+            success.invoke();
+        });
+
+    }
+
+    public void UseEnergy(Action success, Action error){
+
+        var request = CreatePostRequest(b ->{
+            b.setPath("api/v1/tree/use-energy");
         }, NoneBody);
 
 

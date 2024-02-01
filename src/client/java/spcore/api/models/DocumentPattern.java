@@ -1,4 +1,4 @@
-package spcore.fabric.spcore.models;
+package spcore.api.models;
 
 import java.util.List;
 

@@ -1,19 +1,18 @@
-package spcore.fabric.commands;
+package spcore.appapi.commands;
 
 import net.minecraft.client.util.SelectionManager;
 
 import java.util.HashMap;
 
-public class HelloCommand extends BaseCommand {
-
+public class ExitCommand extends BaseCommand{
     @Override
     public boolean Invoke(SelectionManager manager, HashMap<String, String> args) {
-        manager.insert("Hello world!");
+        terminal.Exit();
         return false;
     }
 
     @Override
     public String GetDescription() {
-        return "приветствие";
+        return "выход из терминала";
     }
 }

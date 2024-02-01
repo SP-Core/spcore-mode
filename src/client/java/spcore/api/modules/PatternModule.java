@@ -4,15 +4,15 @@ import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.client.ObjectMapper;
 import okhttp3.*;
 import spcore.api.SpCoreModule;
-import spcore.fabric.spcore.interfaces.PatternCallback;
-import spcore.fabric.spcore.models.DocumentPattern;
+import spcore.api.delegates.PatternDelegate;
+import spcore.api.models.DocumentPattern;
 
 import java.io.IOException;
 import java.util.Objects;
 
 public class PatternModule extends SpCoreModule {
 
-    public void GetPattern(String patternName, PatternCallback callback){
+    public void GetPattern(String patternName, PatternDelegate callback){
         var request = CreateGetRequest(b -> {
             b.setPath("/api/v1/patterns/get");
             b.addParameter("patternName", patternName);
@@ -35,7 +35,7 @@ public class PatternModule extends SpCoreModule {
         });
     }
 
-    public void PutPattern(DocumentPattern pattern, PatternCallback callback){
+    public void PutPattern(DocumentPattern pattern, PatternDelegate callback){
         ObjectMapper mapper = new ObjectMapper(new Gson());
         var json = mapper.writeValueAsString(pattern);
         var body = RequestBody.create(MediaType.get("application/json"), json);

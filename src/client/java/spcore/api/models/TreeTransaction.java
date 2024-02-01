@@ -15,6 +15,6 @@ public class TreeTransaction {
     }
 
     public String toMessage(){
-        return BlockId + "$" + X + "+" + Y + "+" + Z;
+        return BlockId + "$" + X + " " + Y + " " + Z;
     }
 }

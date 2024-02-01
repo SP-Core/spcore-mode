@@ -17,7 +17,7 @@ public class GlobalContext {
 
     public static String getUserName()
     {
-        return UserName;
+        return "Dima5x9";
     }
 
     public static String getUuid()
@@ -38,4 +38,6 @@ public class GlobalContext {
         Uuid = player.getUuidAsString();
         IsInit = true;
     }
+
+
 }

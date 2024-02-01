@@ -1,17 +1,15 @@
-package spcore.fabric.commands;
+package spcore.appapi.commands;
 
 import net.minecraft.client.util.SelectionManager;
+import spcore.api.AuthContext;
 
 import java.util.HashMap;
 
 public class LoutCommand extends BaseCommand{
     @Override
     public boolean Invoke(SelectionManager manager, HashMap<String, String> args) {
-        SpCoreApiContext.IsAuthorized = false;
-        SpCoreApiContext.Code = null;
-        manager.selectAll();
-        manager.delete(-1);
-        manager.insert("Вы вышли из аккаунта");
+        AuthContext.Logout();
+        terminal.Exit();
         return false;
     }
 
