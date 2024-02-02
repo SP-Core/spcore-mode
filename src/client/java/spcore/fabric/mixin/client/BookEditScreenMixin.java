@@ -54,4 +54,6 @@ public class BookEditScreenMixin {
         var handler = new TerminalHandler();
         handler.invoke(player, itemStack, hand, currentPage, pages);
     }
+
+
 }

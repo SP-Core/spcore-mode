@@ -2,6 +2,7 @@ package spcore.fabric.handlers;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.entity.player.PlayerEntity;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public class TerminalHandler {
 
@@ -48,21 +50,14 @@ public class TerminalHandler {
             var currentPage = pages.get(currentPageIndex);
             if(currentPage.startsWith("spt\n")){
 
-                Objects.requireNonNull(mc.getNetworkHandler())
-                        .sendPacket(new BookUpdateC2SPacket(i, pages, Optional.empty()));
 
                 mc.setScreen(new TerminalScreen(mc.player, () ->{
-                    if(itemStack != null){
-                        MixinHandlers.RemoveNbtTerminal(itemStack);
-                        Objects.requireNonNull(mc.getNetworkHandler())
-                                .sendPacket(new BookUpdateC2SPacket(i,
-                                        new ArrayList<>(), Optional.empty()));
-                    }
                     mc.setScreen(null);
                 }, t -> {
                     if(itemStack == null){
                         throw new Exception();
                     }
+                    TimeUnit.SECONDS.sleep(1);
                     MixinHandlers.RemoveNbtTerminal(itemStack);
                     Objects.requireNonNull(mc.getNetworkHandler())
                             .sendPacket(new BookUpdateC2SPacket(i, lPages, Optional.of(t)));
@@ -74,6 +69,7 @@ public class TerminalHandler {
 
 
     }
+
 
     public static void Authorized(String page, SelectionManager selectionManager){
         var code = SpCryptoLink.parse(page);
