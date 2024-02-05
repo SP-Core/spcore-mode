@@ -25,8 +25,6 @@ public class SpCoreModInitializer implements ClientModInitializer {
  		UseBlockCallback.EVENT.register(TreeHandler::Invoke);
 		UseBlockCallback.EVENT.register(ShopCardHandler::Invoke);
 
-
-
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 
 			if(GlobalContext.getIsInit()){

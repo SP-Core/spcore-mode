@@ -17,6 +17,10 @@ public class CommandEngine {
         _commands.put("tree", new TreeCommand());
         _commands.put("exit", new ExitCommand());
         _commands.put("sign", new SignCommand());
+        _commands.put("node", new NodeCommand());
+        _commands.put("demo", new ImGuiHelloCommand());
+        _commands.put("path", new PathCommand());
+        _commands.put("exe", new ExecuteCommand());
     }
 
     public CommandEngine(Terminal terminal) {

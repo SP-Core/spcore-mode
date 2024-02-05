@@ -5,7 +5,8 @@
 	"client": [
 		"ClientPlayerInteractionManagerMixin",
 		"BookEditScreenMixin",
-		"BookScreenMixin"
+		"BookScreenMixin",
+		"MinecraftClientMixin"
 
 	],
 	"injectors": {
