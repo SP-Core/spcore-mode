@@ -41,7 +41,7 @@ public class TerminalScreen
     private int lastClickIndex = -1;
     @Nullable
     private TerminalScreen.PageContent pageContent = TerminalScreen.PageContent.EMPTY;
-    private final Text pageIndicatorText = Text.literal("SP-Terminal");
+    private final Text  pageIndicatorText = Text.literal("SP-Terminal");
     private String pageStringContent;
     public static final Identifier TERMINAL_TEXTURE = new Identifier("spcore:textures/gui/terminal.png");
 
@@ -219,12 +219,12 @@ public class TerminalScreen
         this.setFocused(null);
         int i = (this.width - 192) / 2;
         int j = 2;
-        context.drawTexture(BookScreen.BOOK_TEXTURE, i, 2, 0, 0, 192, 192);
+        context.drawTexture(TERMINAL_TEXTURE, i, 2, 0, 0, 192, 192);
         int n = this.textRenderer.getWidth((StringVisitable)this.pageIndicatorText);
-        context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 0, false);
+        context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 14277081, false);
         TerminalScreen.PageContent pageContent = this.getPageContent();
         for (TerminalScreen.Line line : pageContent.lines) {
-            context.drawText(this.textRenderer, line.text, line.x, line.y, -16777216, false);
+            context.drawText(this.textRenderer, line.text, line.x, line.y, 14277081, false);
         }
         this.drawSelection(context, pageContent.selectionRectangles);
         this.drawCursor(context, pageContent.position, pageContent.atEnd);
@@ -235,9 +235,9 @@ public class TerminalScreen
         if (this.tickCounter / 6 % 2 == 0) {
             position = this.absolutePositionToScreenPosition(position);
             if (!atEnd) {
-                context.fill(position.x, position.y - 1, position.x + 1, position.y + this.textRenderer.fontHeight, -16777216);
+                context.fill(position.x, position.y - 1, position.x + 1, position.y + this.textRenderer.fontHeight, 14277081);
             } else {
-                context.drawText(this.textRenderer, "_", position.x, position.y, 0, false);
+                context.drawText(this.textRenderer, "_", position.x, position.y, 14277081, false);
             }
         }
     }
