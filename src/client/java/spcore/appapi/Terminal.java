@@ -15,8 +15,8 @@ public class Terminal {
     private final CommandEngine commandEngine;
     private String currentCommandName;
     private final SelectionManager manager;
-    private final Action exitAction;
-    private final Action1<String> signAction;
+    public final Action exitAction;
+    public final Action1<String> signAction;
     public Terminal(SelectionManager manager, Action exitAction, Action1<String> signAction) {
         this.commandEngine = new CommandEngine(this);
         this.manager = manager;
@@ -39,16 +39,19 @@ public class Terminal {
     }
 
     public void init(){
-        this.manager.insert("$/");
+        reset();
     }
 
+    public void reset(){
+        currentCommandName = null;
+        manager.selectAll();
+        manager.delete(-1);
+        this.manager.insert("$/");
+    }
     public void onLineEnd(String page){
         try{
             if(currentCommandName != null){
-                currentCommandName = null;
-                manager.selectAll();
-                manager.delete(-1);
-                this.manager.insert("$/");
+                reset();
                 return;
             }
             var endLine = page.lastIndexOf("\n");

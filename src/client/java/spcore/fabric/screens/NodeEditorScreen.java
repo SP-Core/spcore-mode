@@ -11,9 +11,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.Text;
 import spcore.GlobalContext;
-import spcore.imgui.ImGuiImpl;
+//import spcore.imgui.ImGuiImpl;
 import spcore.imgui.nodes.Graph;
-import spcore.imgui.nodes.NodeEditorRender;
 
 import java.awt.*;
 import java.net.URI;
@@ -30,8 +29,8 @@ public class NodeEditorScreen extends Screen {
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        ImGuiImpl.draw(io -> {
-            NodeEditorRender.Render(io, graph);
-        });
+//        ImGuiImpl.draw(io -> {
+//            NodeEditorRender.Render(io, graph);
+//        });
     }
 }

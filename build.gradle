@@ -1,6 +1,7 @@
 plugins {
 	id 'fabric-loom'
 	id 'maven-publish'
+
 }
 
 version = project.mod_version
@@ -67,7 +68,21 @@ dependencies {
 	include 'org.graalvm.truffle:truffle-enterprise:23.1.2'
 	runtimeOnly 'org.graalvm.truffle:truffle-runtime:23.1.2'
 	include 'org.graalvm.truffle:truffle-runtime:23.1.2'
-	// Uncomment the following line to enable the deprecated Fabric API modules. 
+
+	include 'org.graalvm.regex:regex:23.1.2'
+	include 'org.graalvm.sdk:collections:23.1.2'
+	include 'org.graalvm.sdk:jniutils:23.1.2'
+	include 'org.graalvm.sdk:nativebridge:23.1.2'
+	include 'org.graalvm.sdk:nativeimage:23.1.2'
+	include 'org.graalvm.sdk:word:23.1.2'
+	include 'org.graalvm.shadowed:icu4j:23.1.2'
+	include 'org.graalvm.truffle:truffle-api:23.1.2'
+	include 'org.graalvm.truffle:truffle-compiler:23.1.2'
+
+	implementation "org.vineflower:vineflower:1.9.3"
+	implementation 'org.reflections:reflections:0.10.2'
+	//java -jar vineflower-1.9.3.jar -dgs=1 "C:\Users\jackf\Documents\spcore-mode\.gradle\loom-cache\minecraftMaven\net\minecraft\minecraft-clientOnly-51c0cfe141\1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2\minecraft-clientOnly-51c0cfe141-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2.jar" "C:\Users\jackf\Desktop\myApp\minecraft"
+	// Uncomment the following line to enable the deprecated Fabric API modules.
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.
 
 	// modImplementation "net.fabricmc.fabric-api:fabric-api-deprecated:${project.fabric_version}"
@@ -117,3 +132,4 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+

@@ -2,64 +2,55 @@ package spcore.fabric.screens;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.*;
+import net.minecraft.client.gui.screen.advancement.AdvancementsScreen;
+import net.minecraft.client.gui.screen.multiplayer.SocialInteractionsScreen;
+import net.minecraft.client.gui.screen.option.OptionsScreen;
+import net.minecraft.client.gui.widget.*;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.text.Text;
+import net.minecraft.util.Util;
 import spcore.GlobalContext;
-import spcore.imgui.ImGuiImpl;
-import spcore.imgui.nodes.NodeEditorRender;
+//import spcore.imgui.nodes.NodeEditorRender;
+import spcore.appapi.models.SpCoreInfo;
 import spcore.js.JsRuntime;
 
 import javax.script.ScriptException;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 @Environment(value= EnvType.CLIENT)
 
 public class AppScreen extends Screen {
 
     private final JsRuntime jsRuntime;
-
+    private final SpCoreInfo app;
     private String appUrl;
     private Object appUrlIndex;
     private final MinecraftClient mc;
-    public AppScreen(JsRuntime jsRuntime) {
+    public AppScreen(JsRuntime jsRuntime, SpCoreInfo app) {
         super(NarratorManager.EMPTY);
         this.jsRuntime = jsRuntime;
+        this.app = app;
         mc = MinecraftClient.getInstance();
     }
 
-    public void MoveToView(String url){
-        appUrl = url;
-        try {
-            appUrlIndex = jsRuntime.eval("getView(module.exports.core.routes, \"" + url +"\")");
-            if(appUrlIndex.toString().equals("null")){
-                GlobalContext.LOGGER.info("View not found");
-                mc.setScreen((Screen) null);
-                return;
-            }
 
-        } catch (ScriptException e) {
-            throw new RuntimeException(e);
-        }
+    public boolean viewIsNotFound(){
+        return appUrlIndex.toString().equals("null");
     }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
-        if(appUrlIndex == null){
-            mc.setScreen((Screen) null);
-            return;
+        if(viewIsNotFound()){
+            mc.setScreen(new NotFoundViewScreen(app));
         }
-
-        ImGuiImpl.draw(io -> {
-            try {
-                jsRuntime.eval("module.exports.core.routes["+ appUrlIndex +"].handler.render()");
-            } catch (ScriptException e) {
-                GlobalContext.LOGGER.info(e.getMessage());
-                mc.setScreen((Screen) null);
-                return;
-            }
-        });
-
+        this.renderBackground(context);
+        super.render(context, mouseX, mouseY, delta);
     }
+
+
 }

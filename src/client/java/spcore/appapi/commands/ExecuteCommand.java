@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.client.ObjectMapper;
 import net.minecraft.client.util.SelectionManager;
 import spcore.GlobalContext;
 import spcore.api.models.PriceList;
+import spcore.appapi.configuration.KnowApplicationManager;
 import spcore.appapi.configuration.PATHS;
 import spcore.appapi.helpers.PathHelper;
 import spcore.appapi.models.SpCoreInfo;
@@ -50,21 +51,8 @@ public class ExecuteCommand extends BaseCommand{
         Gson gson = new Gson();
         ObjectMapper mapper = new ObjectMapper(gson);
         var spCoreInfo = mapper.readValue(content, SpCoreInfo.class);
-        try {
-            content = Files.readString(Path.of(PathHelper.combine(path, spCoreInfo.exe)));
-        } catch (IOException e) {
-            manager.insert("ошибка чтения файла");
-            return false;
-        }
-
-        try {
-            AppEngine.getInstance().runApp(content);
-        } catch (ScriptException e) {
-            GlobalContext.LOGGER.error(e.getMessage());
-            manager.insert("ошибка чтения файла");
-            return false;
-        }
-
+        spCoreInfo.absolute = path;
+        KnowApplicationManager.resolveAndRun(spCoreInfo);
         return false;
     }
 

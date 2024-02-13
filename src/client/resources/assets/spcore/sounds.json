@@ -1,0 +1,11 @@
+{
+  "init":{
+    "subtitle": "sounds.spcore.init",
+    "sounds": [
+      {
+        "name": "spcore:init",
+        "stream": true
+      }
+    ]
+  }
+}

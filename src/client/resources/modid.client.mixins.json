@@ -1,15 +1,15 @@
 {
-	"required": true,
-	"package": "spcore.fabric.mixin.client",
-	"compatibilityLevel": "JAVA_17",
-	"client": [
-		"ClientPlayerInteractionManagerMixin",
-		"BookEditScreenMixin",
-		"BookScreenMixin",
-		"MinecraftClientMixin"
-
-	],
-	"injectors": {
-		"defaultRequire": 1
+  "required": true,
+  "package": "spcore.fabric.mixin.client",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "BookEditScreenMixin",
+    "BookScreenMixin",
+    "ClientPlayerInteractionManagerMixin",
+    "MinecraftClientMixin",
+    "SoundManagerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
 	}
 }

@@ -5,12 +5,24 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
+import net.minecraft.client.gui.screen.ChatInputSuggestor;
+import net.minecraft.client.gui.screen.ChatScreen;
+import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.GridWidget;
+import net.minecraft.client.gui.widget.SimplePositioningWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
@@ -26,10 +38,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.Nullable;
+import spcore.GlobalContext;
+import spcore.SpCoreLogger;
 import spcore.api.delegates.Action;
 import spcore.api.delegates.Action1;
 import spcore.appapi.Terminal;
+import spcore.appapi.background.BackgroundJobManager;
+import spcore.appapi.configuration.KnowApplicationManager;
+import spcore.appapi.models.KnownApplication;
+import spcore.appapi.models.SpCoreInfo;
 
+import javax.script.ScriptException;
 import java.util.*;
 
 @Environment(value= EnvType.CLIENT)
@@ -41,17 +60,33 @@ public class TerminalScreen
     private int lastClickIndex = -1;
     @Nullable
     private TerminalScreen.PageContent pageContent = TerminalScreen.PageContent.EMPTY;
-    private final Text  pageIndicatorText = Text.literal("SP-Terminal");
+//    private final Text  pageIndicatorText = Text.literal("SP-Terminal");
     private String pageStringContent;
     public static final Identifier TERMINAL_TEXTURE = new Identifier("spcore:textures/gui/terminal.png");
 
     private final Terminal terminal;
-    public TerminalScreen(PlayerEntity player, Action exit, Action1<String> sign) {
-        super(NarratorManager.EMPTY);
+    private static Terminal lastTerminal;
+    private static boolean showMainSpace = true;
+    private final List<Drawable> drawables = new ArrayList<>();
+    private KnownApplication currentApp = null;
+    public static Terminal getCurrent(){
+        return lastTerminal;
+    }
+    public TerminalScreen(Action exit, Action1<String> sign) {
+        super(Text.literal("SP-Terminal"));
         if (pageStringContent == null) {
             pageStringContent = "";
         }
         terminal = new Terminal(currentPageSelectionManager, exit, sign);
+        lastTerminal = terminal;
+    }
+
+    public TerminalScreen(Terminal terminal) {
+        super(Text.literal("SP-Terminal"));
+        this.terminal = new Terminal(currentPageSelectionManager, terminal.exitAction, terminal.signAction);
+        if (pageStringContent == null) {
+            pageStringContent = "";
+        }
     }
 
 
@@ -75,6 +110,7 @@ public class TerminalScreen
     protected void init() {
         this.invalidatePageContent();
         this.terminal.init();
+        initWidgets();
     }
 
 
@@ -82,6 +118,9 @@ public class TerminalScreen
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
+        }
+        if(showMainSpace){
+            return false;
         }
         boolean bl = this.keyPressedEditMode(keyCode, scanCode, modifiers);
         this.terminal.onKeyDown(getCurrentPageContent());
@@ -96,6 +135,9 @@ public class TerminalScreen
     public boolean charTyped(char chr, int modifiers) {
         if (super.charTyped(chr, modifiers)) {
             return true;
+        }
+        if(showMainSpace){
+            return false;
         }
         if (SharedConstants.isValidChar((char)chr)) {
             this.currentPageSelectionManager.insert(Character.toString(chr));
@@ -217,17 +259,20 @@ public class TerminalScreen
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
         this.renderBackground(context);
         this.setFocused(null);
-        int i = (this.width - 192) / 2;
-        int j = 2;
-        context.drawTexture(TERMINAL_TEXTURE, i, 2, 0, 0, 192, 192);
-        int n = this.textRenderer.getWidth((StringVisitable)this.pageIndicatorText);
-        context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 14277081, false);
-        TerminalScreen.PageContent pageContent = this.getPageContent();
-        for (TerminalScreen.Line line : pageContent.lines) {
-            context.drawText(this.textRenderer, line.text, line.x, line.y, 14277081, false);
+        if(!showMainSpace){
+            int i = (this.width - 192) / 2;
+            int j = 2;
+            context.drawTexture(TERMINAL_TEXTURE, i, 2, 0, 0, 192, 192);
+            int n = this.textRenderer.getWidth((StringVisitable)this.title);
+            context.drawText(this.textRenderer, this.title, i - n + 192 - 44, 18, 14277081, false);
+            TerminalScreen.PageContent pageContent = this.getPageContent();
+            for (TerminalScreen.Line line : pageContent.lines) {
+                context.drawText(this.textRenderer, line.text, line.x, line.y, 14277081, false);
+            }
+            this.drawSelection(context, pageContent.selectionRectangles);
+            this.drawCursor(context, pageContent.position, pageContent.atEnd);
         }
-        this.drawSelection(context, pageContent.selectionRectangles);
-        this.drawCursor(context, pageContent.position, pageContent.atEnd);
+
         super.render(context, mouseX, mouseY, delta);
     }
 
@@ -265,6 +310,9 @@ public class TerminalScreen
         if (super.mouseClicked(mouseX, mouseY, button)) {
             return true;
         }
+        if(showMainSpace){
+            return false;
+        }
         if (button == 0) {
             long l = Util.getMeasuringTimeMs();
             TerminalScreen.PageContent pageContent = this.getPageContent();
@@ -296,6 +344,9 @@ public class TerminalScreen
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
+        }
+        if(showMainSpace){
+            return false;
         }
         if (button == 0) {
             TerminalScreen.PageContent pageContent = this.getPageContent();
@@ -490,5 +541,181 @@ public class TerminalScreen
             this.y = y;
         }
     }
+
+    private void initWidgets() {
+        initLeftWidgets();
+        initTerminalButton();
+    }
+
+    private void initLeftWidgets(){
+        GridWidget gridWidget = new GridWidget();
+        gridWidget.getMainPositioner().margin(2, 2, 2, 0);
+        GridWidget.Adder adder = gridWidget.createAdder(4);
+
+        List<KnownApplication> apps;
+        if(this.currentApp == null){
+            apps = KnowApplicationManager.getApplications();
+        }
+        else{
+            apps = KnowApplicationManager.getApplications()
+                    .stream().filter(p -> p.Hash == this.currentApp.Hash)
+                    .toList();
+        }
+
+
+        for (var app: apps
+        ) {
+            adder.add(ButtonWidget.builder(Text.of(app.Manifest.manifest.name), (button) -> {
+                sendCommand("exe " + app.Manifest.manifest.appId);
+            }).width(120).build());
+            adder.add(ButtonWidget.builder(Text.of("reset"), (button) -> {
+                sendCommand("up " + app.Manifest.manifest.appId);
+            }).width(60).build());
+            adder.add(ButtonWidget.builder(Text.of("up!"), (button) -> {
+                sendCommand("up " + app.Manifest.manifest.appId);
+            }).width(25).build());
+            adder.add(ButtonWidget.builder(Text.of("⚙"), (button) -> {
+                this.currentApp = app;
+                this.clearAndInit();
+            }).width(20).build());
+        }
+
+        int i;
+        if(showMainSpace){
+            i = this.width / 2 - (192 / 2);
+        }
+        else{
+            i = this.width / 2 + (192 / 2);
+        }
+        gridWidget.refreshPositions();
+        SimplePositioningWidget.setPos(gridWidget, i, 5, this.width, this.height, 0F, 0F);
+        gridWidget.forEachChild(this::addDrawableChild);
+
+        if(currentApp != null){
+            GridWidget settingGridWidget = new GridWidget();
+            settingGridWidget.getMainPositioner().margin(2, 2, 2, 0);
+
+            GridWidget.Adder settingAdder = settingGridWidget.createAdder(1);
+
+            settingAdder.add(new TextWidget(Text.of("id: " + currentApp.Manifest.manifest.appId), this.textRenderer));
+            settingAdder.add(new TextWidget(Text.of("version: " + currentApp.Manifest.manifest.version), this.textRenderer));
+            settingAdder.add(new TextWidget(Text.of("lifetime: " + currentApp.Manifest.manifest.lifetime), this.textRenderer));
+            settingAdder.add(new TextWidget(Text.of("server_domain: " + currentApp.Manifest.manifest.server_domain), this.textRenderer));
+            settingAdder.add(new TextWidget(Text.of("host_access: " + currentApp.Manifest.manifest.host_access), this.textRenderer));
+            settingAdder.add(new TextWidget(Text.of("source: " + currentApp.Manifest.absolute), this.textRenderer));
+
+            if(currentApp.Manifest.manifest.lifetime.equals("background")){
+
+                if(BackgroundJobManager.getInstance()
+                        .getJobs().stream().anyMatch(p -> p.AppInfo.hashCode() == currentApp.Hash)){
+                    settingAdder.add(ButtonWidget.builder(Text.of("Остановить фоновый процесс"), (button) -> {
+                        currentApp.DisableBackground = true;
+                        KnowApplicationManager.Save();
+                        BackgroundJobManager.getInstance()
+                                .remove(currentApp.Manifest);
+                        clearAndInit();
+
+                    }).width(200).build());
+                }
+                else{
+                    settingAdder.add(ButtonWidget.builder(Text.of("Запустить фоновый процесс"), (button) -> {
+                        currentApp.DisableBackground = false;
+                        KnowApplicationManager.Save();
+                        try {
+                            BackgroundJobManager.getInstance()
+                                    .register(currentApp.Manifest, currentApp.DisableBackground);
+                        } catch (ScriptException e) {
+                            GlobalContext.LOGGER.error(e.getMessage());
+                        }
+
+                        clearAndInit();
+                    }).width(200).build());
+                }
+
+            }
+
+
+            settingGridWidget.refreshPositions();
+            SimplePositioningWidget.setPos(settingGridWidget, i, 45, this.width, this.height, 0F, 0F);
+            settingGridWidget.forEachChild(this::addDrawableChild);
+        }
+
+    }
+
+
+    private void initTerminalButton(){
+
+        Text text = null;
+
+        GridWidget gridWidget = new GridWidget();
+        gridWidget.getMainPositioner().margin(2, 2, 2, 0);
+        GridWidget.Adder adder = gridWidget.createAdder(1);
+        if(currentApp != null){
+            adder.add(ButtonWidget.builder(Text.of("Закрыть настройки"), (button) -> {
+                currentApp = null;
+                this.clearAndInit();
+            }).width(150).build());
+        }
+
+        if(GlobalContext.LOGGER.LoggingChat){
+            text = Text.of("Отключить логи");
+        }
+        else{
+            text = Text.of("Включить логи");
+        }
+
+        adder.add(ButtonWidget.builder(text, (button) -> {
+            GlobalContext.LOGGER.LoggingChat = !GlobalContext.LOGGER.LoggingChat;
+            this.clearAndInit();
+        }).width(150).build());
+
+        if(showMainSpace){
+            text = Text.of("Open terminal");
+        }
+        else{
+            text = Text.of("Open GUI");
+        }
+
+        adder.add(ButtonWidget.builder(text, (button) -> {
+            showMainSpace = !showMainSpace;
+            this.clearAndInit();
+        }).width(150).build());
+
+        int h;
+        if(currentApp != null){
+            h = this.height - 80;
+        }
+        else{
+            h = this.height - 60;
+        }
+        gridWidget.refreshPositions();
+        SimplePositioningWidget.setPos(gridWidget, this.width - 170, h, this.width, this.height, 0F, 0F);
+        gridWidget.forEachChild(this::addDrawableChild);
+    }
+
+    protected void showTerminal(){
+        if(!showMainSpace){
+            return;
+        }
+        showMainSpace = false;
+        this.clearAndInit();
+    }
+
+    protected void showGui(){
+        if(showMainSpace){
+            return;
+        }
+        showMainSpace = true;
+        this.clearAndInit();
+    }
+
+    protected void sendCommand(String command){
+        terminal.reset();
+        currentPageSelectionManager.insert(command);
+        currentPageSelectionManager.insert("\n");
+        terminal.onLineEnd(getCurrentPageContent());
+    }
+
+
 }
 

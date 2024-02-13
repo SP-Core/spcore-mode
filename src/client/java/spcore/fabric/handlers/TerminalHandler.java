@@ -1,21 +1,32 @@
 package spcore.fabric.handlers;
 
 import com.google.common.collect.Lists;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.SelectionManager;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.random.Random;
 import spcore.GlobalContext;
 import spcore.MixinHandlers;
 import spcore.api.AuthContext;
 import spcore.api.SpCoreApi;
 import spcore.api.helpers.SpCryptoLink;
 import spcore.fabric.screens.TerminalScreen;
+import spcore.fabric.sounds.SpCoreSound;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +36,20 @@ import java.util.concurrent.TimeUnit;
 
 public class TerminalHandler {
 
+    public static final Identifier Id = Identifier.of(GlobalContext.MOD_ID, "init");
 
+    public static SoundEvent Sound;
     public void invoke(PlayerEntity player, ItemStack itemStack, Hand hand, int currentPageIndex, List<String> pages){
+
+//        var ff = new PositionedSoundInstance(SoundEvent.of(Id), SoundCategory.MASTER, 1, 1, Random.create(11), player.getX(), player.getY(), player.getZ());
+//        MinecraftClient.getInstance()
+//                        .getSoundManager().play(ff);
+
+        assert MinecraftClient.getInstance().player != null;
+        SharedConstants.isDevelopment = true;
+
+        MinecraftClient.getInstance().player.playSound(SoundEvent.of(Id), 1, 1);
+        SharedConstants.isDevelopment = false;
         NbtCompound nbt = null;
         if(itemStack != null){
             nbt = itemStack.getNbt();
@@ -51,7 +74,7 @@ public class TerminalHandler {
             if(currentPage.startsWith("spt\n")){
 
 
-                mc.setScreen(new TerminalScreen(mc.player, () ->{
+                mc.setScreen(new TerminalScreen(() ->{
                     mc.setScreen(null);
                 }, t -> {
                     if(itemStack == null){

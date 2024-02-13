@@ -1,5 +1,7 @@
 package spcore.fabric.eventHandlers;
 
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.item.Item;
 import spcore.api.AuthContext;
 import spcore.api.SpCoreApi;
 import spcore.api.models.TreeTransaction;
@@ -43,6 +45,7 @@ public class TreeHandler {
         Block block = blockState.getBlock();
         Integer stage = -1;
         TreeTransaction transaction = null;
+
         if(block instanceof SaplingBlock saplingBlock){
             stage = (Integer)blockState.get(STAGE);
             transaction = new TreeTransaction(saplingBlock.getTranslationKey(), blockPos);
@@ -55,7 +58,6 @@ public class TreeHandler {
                 lastNote++;
             }
             player.playSound(SoundEvents.BLOCK_NOTE_BLOCK_BELL.value(), 1, getPitchFromNote(lastNote));
-
             SpCoreApi.TREE.TreeClick(transaction.toMessage(), stage);
 
         }
