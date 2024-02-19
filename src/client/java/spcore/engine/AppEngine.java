@@ -7,6 +7,7 @@ import spcore.appapi.helpers.PathHelper;
 import spcore.appapi.models.SpCoreInfo;
 import spcore.fabric.screens.AppScreen;
 //import spcore.imgui.ImGuiImpl;
+import spcore.imgui.ImGuiImpl;
 import spcore.js.AssemblyHelper;
 import spcore.js.JsRuntime;
 import spcore.js.functions.GetCommandFunc;
@@ -43,7 +44,7 @@ public class AppEngine {
 
 
     public void init(){
-        //ImGuiImpl.create(window.getHandle());
+        ImGuiImpl.create(window.getHandle());
     }
 
     public void runApp(JsRuntime runtime, SpCoreInfo app) throws ScriptException {

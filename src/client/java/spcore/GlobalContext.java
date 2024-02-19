@@ -4,6 +4,7 @@ import com.mojang.logging.LogUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.report.log.ChatLog;
+import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.LoggerConfig;
@@ -22,7 +23,6 @@ public class GlobalContext {
     private static String Uuid;
 
     private static boolean IsInit;
-
 
     public static String getUserName()
     {

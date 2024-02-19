@@ -31,7 +31,5 @@ public class MinecraftClientMixin {
         var app = new AppEngine(window);
         app.init();
         BackgroundJobManager.getInstance();
-
-
     }
 }

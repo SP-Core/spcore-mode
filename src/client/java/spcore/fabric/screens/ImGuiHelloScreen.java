@@ -7,7 +7,6 @@ import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.NarratorManager;
 //import spcore.imgui.ImGuiImpl;
-import spcore.imgui.nodes.Graph;
 
 @Environment(value= EnvType.CLIENT)
 public class ImGuiHelloScreen extends Screen {

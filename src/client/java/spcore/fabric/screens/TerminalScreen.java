@@ -603,7 +603,6 @@ public class TerminalScreen
             settingAdder.add(new TextWidget(Text.of("server_domain: " + currentApp.Manifest.manifest.server_domain), this.textRenderer));
             settingAdder.add(new TextWidget(Text.of("host_access: " + currentApp.Manifest.manifest.host_access), this.textRenderer));
             settingAdder.add(new TextWidget(Text.of("source: " + currentApp.Manifest.absolute), this.textRenderer));
-
             if(currentApp.Manifest.manifest.lifetime.equals("background")){
 
                 if(BackgroundJobManager.getInstance()

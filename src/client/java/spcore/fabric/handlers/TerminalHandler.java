@@ -26,6 +26,7 @@ import spcore.api.AuthContext;
 import spcore.api.SpCoreApi;
 import spcore.api.helpers.SpCryptoLink;
 import spcore.fabric.screens.TerminalScreen;
+import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.sounds.SpCoreSound;
 
 import java.util.ArrayList;
@@ -44,12 +45,13 @@ public class TerminalHandler {
 //        var ff = new PositionedSoundInstance(SoundEvent.of(Id), SoundCategory.MASTER, 1, 1, Random.create(11), player.getX(), player.getY(), player.getZ());
 //        MinecraftClient.getInstance()
 //                        .getSoundManager().play(ff);
+        MinecraftClient.getInstance().setScreen(new StudioView("index"));
 
-        assert MinecraftClient.getInstance().player != null;
-        SharedConstants.isDevelopment = true;
-
-        MinecraftClient.getInstance().player.playSound(SoundEvent.of(Id), 1, 1);
-        SharedConstants.isDevelopment = false;
+//        assert MinecraftClient.getInstance().player != null;
+//        SharedConstants.isDevelopment = true;
+//
+//        MinecraftClient.getInstance().player.playSound(SoundEvent.of(Id), 1, 1);
+//        SharedConstants.isDevelopment = false;
         NbtCompound nbt = null;
         if(itemStack != null){
             nbt = itemStack.getNbt();

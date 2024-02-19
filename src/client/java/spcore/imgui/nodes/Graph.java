@@ -1,7 +1,9 @@
 package spcore.imgui.nodes;
 
-import java.util.HashMap;
-import java.util.Map;
+import spcore.imgui.nextPinDelegate;
+import spcore.view.ViewComponent;
+
+import java.util.*;
 
 public final class Graph {
     public int nextNodeId = 1;
@@ -13,19 +15,24 @@ public final class Graph {
         final GraphNode first = createGraphNode();
         final GraphNode second = createGraphNode();
         first.outputNodeId = second.nodeId;
+        first.outputProperty = "background-color";
     }
 
     public GraphNode createGraphNode() {
-        final GraphNode node = new GraphNode(nextNodeId++, nextPinId++, nextPinId++);
+        var node = GraphNode.createViewNode(() -> nextNodeId++);
         this.nodes.put(node.nodeId, node);
         return node;
     }
 
     public GraphNode findByInput(final long inputPinId) {
         for (GraphNode node : nodes.values()) {
-            if (node.getInputPinId() == inputPinId) {
-                return node;
+            for (var d: node.inputPins.entrySet()
+                 ) {
+                if (d.getValue() == inputPinId) {
+                    return node;
+                }
             }
+
         }
         return null;
     }
@@ -40,20 +47,23 @@ public final class Graph {
     }
 
     public static final class GraphNode {
-        public final int nodeId;
-        public final int inputPinId;
-        public final int outputPinId;
+        public int nodeId;
+        public final HashMap<String, Integer> inputPins = new HashMap<>();
+        public final HashMap<Integer, String> inputProperties = new HashMap<>();
+
+        public int outputPinId;
 
         public int outputNodeId = -1;
+        public String outputProperty = null;
+        public final String type;
+        public final HashMap<String, String> properties = new HashMap<>();
 
-        public GraphNode(final int nodeId, final int inputPinId, final int outputPintId) {
-            this.nodeId = nodeId;
-            this.inputPinId = inputPinId;
-            this.outputPinId = outputPintId;
+        public GraphNode(String type) {
+            this.type = type;
         }
 
-        public int getInputPinId() {
-            return inputPinId;
+        public int getInputPinId(String property) {
+            return inputPins.get(property);
         }
 
         public int getOutputPinId() {
@@ -61,7 +71,26 @@ public final class Graph {
         }
 
         public String getName() {
-            return "Node " + (char) (64 + nodeId);
+            return type + " " + (char) (64 + nodeId);
+        }
+
+        public static GraphNode createViewNode(nextPinDelegate nextPinDelegate){
+            var view = new ViewComponent();
+            var graph = new GraphNode("View");
+            graph.nodeId = nextPinDelegate.nextPin();
+            for (var style: view.getStyle().styles.entrySet()
+                 ) {
+                graph.properties.put(style.getKey(), style.getValue());
+                var np = nextPinDelegate.nextPin();
+                graph.inputProperties.put(np, style.getKey());
+                graph.inputPins.put(style.getKey(), np);
+            }
+            graph.outputPinId = nextPinDelegate.nextPin();
+            return graph;
         }
     }
+
+
+
+
 }

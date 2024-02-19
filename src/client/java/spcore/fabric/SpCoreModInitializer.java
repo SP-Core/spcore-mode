@@ -4,6 +4,7 @@ import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
@@ -29,6 +30,7 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import spcore.fabric.eventHandlers.TreeHandler;
 import spcore.fabric.handlers.TerminalHandler;
 import spcore.fabric.screens.AppResolverScreen;
+import spcore.fabric.screens.studio.StudioView;
 
 import javax.script.ScriptException;
 import java.io.IOException;
@@ -96,6 +98,24 @@ public class SpCoreModInitializer implements ClientModInitializer {
 
 			AuthContext.Init();
 		});
+
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+			var screen = client.currentScreen;
+			if(screen == null){
+				return;
+			}
+
+			if(screen instanceof StudioView view){
+				if(view.nodeContext.init){
+					if(view.nodeContext.save()){
+						view.restart();
+					}
+				}
+
+			}
+		});
+
+
 	}
 
 }
