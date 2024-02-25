@@ -1,13 +1,14 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.view;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import org.joml.Vector4f;
-import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.inputs.Vector4ValueInput;
 import spcore.imgui.nodes.models.Node;
-import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.NodeInfo;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.view.ViewComponent;
 import spcore.view.components.TextComponent;
@@ -15,29 +16,15 @@ import spcore.view.components.TextComponent;
 import java.util.HashMap;
 
 public class TextViewNodeType extends ViewNodeType {
-    @Override
-    public String getName() {
-        return "Text view";
-    }
+
 
     @Override
-    public Node create(NodeContext context) {
-        var node = super.create(context);
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = super.internalCreateInfo(nt);
 
-        node.inputs.add(new Pin(context.nextId(),
-                "text",
-                PinType.String));
-
-        node.inputs.add(new Pin(context.nextId(),
-                "scale",
-                PinType.Float));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "color",
-                        PinType.Vector4)
-        );
-
+        node.addInput(new PinInfo("text", PinType.String));
+        node.addInput(new PinInfo("scale", PinType.Float));
+        node.addInput(new PinInfo("color", PinType.Vector4));
         return node;
     }
 
@@ -47,8 +34,8 @@ public class TextViewNodeType extends ViewNodeType {
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
-        var outputs = super.process(node, inputs);
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
+        var outputs = super.internalProcess(node, inputs);
 
         var component = (TextComponent) outputs.get("component");
 

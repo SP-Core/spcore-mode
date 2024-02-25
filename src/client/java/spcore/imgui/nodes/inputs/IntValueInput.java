@@ -18,7 +18,7 @@ public class IntValueInput extends AbstractValueInput {
         }
         ImGui.pushID(pin.id.toString());
         ImGui.pushItemWidth(200);
-        if(ImGui.inputInt(pin.name, value)){
+        if(ImGui.inputInt(pin.pinName, value)){
             node.values.put(pin.id.value, value.toString());
         }
         ImGui.popID();

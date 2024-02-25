@@ -1,67 +1,42 @@
 package spcore.imgui.nodes.types.guides;
 
 import imgui.ImColor;
-import org.joml.Vector2f;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.imgui.nodes.types.AbstractNodeType;
 
 import java.util.HashMap;
 
-public class QuideSize extends AbstractNodeType {
-    @Override
-    public String getName() {
-        return "Quide size";
-    }
+public class GuideSize extends AbstractNodeType {
 
     @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "top",
-                        PinType.String));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "left",
-                        PinType.String));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "bottom",
-                        PinType.String));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "right",
-                        PinType.String));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "width",
-                        PinType.Int));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "height",
-                        PinType.Int));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
+        node.addInput(new PinInfo("top", PinType.String));
+        node.addInput(new PinInfo("left", PinType.String));
+        node.addInput(new PinInfo("bottom", PinType.String));
+        node.addInput(new PinInfo("right", PinType.String));
+        node.addOutput(new PinInfo("width", PinType.Float));
+        node.addOutput(new PinInfo("height", PinType.Float));
 
         return node;
     }
 
+
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
 
-        int top = 0;
-        int bottom = 0;
-        int left = 0;
-        int right = 0;
+        float top = 0;
+        float bottom = 0;
+        float left = 0;
+        float right = 0;
         if(node.containsInputValue("top")){
             var v = node.getInputValue("top");
             if(inputs.data.horizontals.containsKey(v)){

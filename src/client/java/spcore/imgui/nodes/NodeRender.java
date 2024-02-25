@@ -4,37 +4,50 @@ import imgui.ImColor;
 import imgui.ImGui;
 import imgui.ImVec2;
 import imgui.extension.nodeditor.NodeEditor;
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiTabBarFlags;
+import imgui.flag.ImGuiWindowFlags;
+import imgui.type.ImBoolean;
 import imgui.type.ImLong;
+import imgui.type.ImString;
 import spcore.GlobalContext;
-import spcore.imgui.nodes.enums.IconType;
-import spcore.imgui.nodes.enums.NodeType;
-import spcore.imgui.nodes.enums.PinKind;
-import spcore.imgui.nodes.enums.PinType;
+import spcore.imgui.ImGuiImpl;
+import spcore.imgui.nodes.enums.*;
 import spcore.imgui.nodes.models.*;
 import spcore.imgui.nodes.types.*;
-import spcore.imgui.nodes.types.guides.Quide;
-import spcore.imgui.nodes.types.guides.QuideLink;
-import spcore.imgui.nodes.types.guides.QuideSize;
+import spcore.imgui.nodes.types.guides.Guide;
+import spcore.imgui.nodes.types.guides.GuideLink;
+import spcore.imgui.nodes.types.guides.GuideSize;
+import spcore.imgui.nodes.types.literal.ColorNodeType;
+import spcore.imgui.nodes.types.literal.IntNodeType;
+import spcore.imgui.nodes.types.literal.TextNodeType;
+import spcore.imgui.nodes.types.literal.VectorNodeType;
 import spcore.imgui.nodes.types.math.Float.AddFloatMathNode;
 import spcore.imgui.nodes.types.math.Float.DivFloatMathNode;
 import spcore.imgui.nodes.types.math.Float.MulFloatMathNode;
 import spcore.imgui.nodes.types.math.Int.AddIntMathNode;
 import spcore.imgui.nodes.types.math.Int.DivIntMathNode;
 import spcore.imgui.nodes.types.math.Int.MulIntMathNode;
-import spcore.imgui.nodes.types.math.NoiceNodeType;
+import spcore.imgui.nodes.types.math.RandomNodeType;
 import spcore.imgui.nodes.types.math.Vector2.AddVector2MathNode;
 import spcore.imgui.nodes.types.math.Vector2.DivVector2MathNode;
 import spcore.imgui.nodes.types.math.Vector3.AddVector3MathNode;
 import spcore.imgui.nodes.types.math.Vector3.DivVector3MathNode;
+import spcore.imgui.nodes.types.render.DevRenderNodeType;
+import spcore.imgui.nodes.types.render.RenderNodeType;
 import spcore.imgui.nodes.types.renders.AbstractNodeRender;
 import spcore.imgui.nodes.types.renders.BlueprintNodeRender;
+import spcore.imgui.nodes.types.storage.StorageResetNodeType;
+import spcore.imgui.nodes.types.storage.StorageValueNodeType;
 import spcore.imgui.nodes.types.variables.ScreenNodeType;
+import spcore.imgui.nodes.types.view.*;
 import spcore.imgui.nodes.utils.ImGuiUtils;
 import spcore.imgui.nodes.utils.WidgetsUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class NodeRender {
 
@@ -51,50 +64,14 @@ public class NodeRender {
     public Pin newLinkPin;
     private float leftPaneWidth = 400;
     private float rightPaneWidth = 800;
-    public final ArrayList<AbstractNodeType> nodeTypes = new ArrayList<>();
-    private final HashMap<NodeType, AbstractNodeRender> renderHashMap = new HashMap<>();
+
+    private BlueprintNodeRender nodeRender = new BlueprintNodeRender();
+
+    private final List<NodeTab> tabs = new ArrayList<>();
     public NodeRender(NodeContext context) {
         this.context = context;
-        this.nodeTypes.add(new IntNodeType());
-        this.nodeTypes.add(new VectorNodeType());
-        this.nodeTypes.add(new ColorNodeType());
-        this.nodeTypes.add(new ViewNodeType());
-        this.nodeTypes.add(new BorderViewNodeType());
-        this.nodeTypes.add(new RenderNodeType());
-        this.nodeTypes.add(new DevRenderNodeType());
-        this.nodeTypes.add(new TextViewNodeType());
-        this.nodeTypes.add(new MixNodeType());
-        this.nodeTypes.add(new TextNodeType());
-
-        this.nodeTypes.add(new RandomNodeType());
-        this.nodeTypes.add(new RepeatNodeType());
-        this.nodeTypes.add(new NoiceNodeType());
-
-        this.nodeTypes.add(new QuideLink());
-        this.nodeTypes.add(new QuideSize());
-        this.nodeTypes.add(new Quide());
-        //this.nodeTypes.add(new MathNodeType());
-
-        this.nodeTypes.add(new ScreenNodeType());
-
-        this.nodeTypes.add(new StorageValueNodeType());
-        this.nodeTypes.add(new StorageResetNodeType());
-        this.nodeTypes.add(new AddFloatMathNode());
-        this.nodeTypes.add(new MulFloatMathNode());
-        this.nodeTypes.add(new DivFloatMathNode());
-
-        this.nodeTypes.add(new AddIntMathNode());
-        this.nodeTypes.add(new MulIntMathNode());
-        this.nodeTypes.add(new DivIntMathNode());
-
-        this.nodeTypes.add(new AddVector2MathNode());
-        this.nodeTypes.add(new DivVector2MathNode());
-
-        this.nodeTypes.add(new AddVector3MathNode());
-        this.nodeTypes.add(new DivVector3MathNode());
-
-        this.renderHashMap.put(NodeType.Blueprint, new BlueprintNodeRender());
-        //this.renderHashMap.put(NodeType.Math, new MathNodeRender());
+        this.tabs.add(new NodeTab("main", "fefeef"));
+        this.tabs.add(new NodeTab("main2", "fefeef2"));
     }
 
     public Node spawn(Node node){
@@ -139,36 +116,31 @@ public class NodeRender {
     }
 
     private void BuildNode(Node node){
+        node.init();
         for (var input: node.inputs
         ) {
             input.nodeId = node.id;
-            input.kind = PinKind.Input;
         }
 
         for (var output: node.outputs
         ) {
             output.nodeId = node.id;
-            output.kind = PinKind.Output;
         }
     }
 
+
+
     public void render(){
         UpdateTouch();
-        var io = ImGui.getIO();
         NodeEditor.setCurrentEditor(context.context);
-        ImGui.sameLine(0, 12);
         NodeEditor.begin("Node editor");
         {
-            for (var r: renderHashMap.values()
-                 ) {
-                r.init(this);
-            }
+            nodeRender.init(this);
             var cursorTopLeft = ImGui.getCursorScreenPos();
+
 
             for (var node: context.nodes
             ) {
-                var nodeRender = renderHashMap.get(node.type);
-
                 nodeRender.render(node);
             }
 
@@ -187,7 +159,7 @@ public class NodeRender {
                         Pin endPin = FindPin((int)endPinId.get());
 
                         newLinkPin = startPin != null ? startPin : endPin;
-                        if(endPin.kind == PinKind.Input){
+                        if(endPin.innerPin.kind == PinKind.Input){
                             var s = startPin;
                             startPin = endPin;
                             endPin = s;
@@ -199,7 +171,7 @@ public class NodeRender {
                             if(startPin == endPin){
                                 NodeEditor.rejectNewItem(255, 0, 0, 255, 2.0f);
                             }
-                            else if(endPin.kind == startPin.kind){
+                            else if(endPin.innerPin.kind == startPin.innerPin.kind){
                                 showLabel("x Incompatible Pin Kind", ImColor.floatToColor(45, 32, 32, 180));
                                 NodeEditor.rejectNewItem(255, 0, 0, 255, 2.0f);
                             }
@@ -296,11 +268,20 @@ public class NodeRender {
             var newNodePostion = openPopupPosition;
             Node node = null;
 
-            for (var nodeType: nodeTypes
-                 ) {
-                if(ImGui.menuItem(nodeType.getName())){
-                    node = spawn(nodeType.create(context));
+            for (var category: NodeCategory.values()
+            ) {
+
+                if(ImGui.beginMenu(category.value)){
+                    for (var nodeType: category.getTypes()
+                    ) {
+                        if(ImGui.menuItem(nodeType.name)){
+                            node = spawn(nodeType.nodeType.create(NodeType.getNodeInfo(nodeType), context));
+                        }
+                    }
+                    ImGui.endMenu();
                 }
+
+
             }
 
             if(node != null){
@@ -311,14 +292,14 @@ public class NodeRender {
 
                 var startPin = newNodeLinkPin;
                 if(startPin != null){
-                    var pins = startPin.kind == PinKind.Input ? node.inputs : node.outputs;
+                    var pins = startPin.innerPin.kind == PinKind.Input ? node.inputs : node.outputs;
 
                     for (var pin: pins
                     ) {
 
                         if(CanCreateLink(startPin, pin)){
                             var endPin = pin;
-                            if(startPin.kind == PinKind.Input){
+                            if(startPin.innerPin.kind == PinKind.Input){
                                 var v = startPin;
                                 startPin = endPin;
                                 endPin = v;
@@ -345,17 +326,15 @@ public class NodeRender {
             createNewNode = false;
         }
 
-        //ImGui.popStyleVar();
         NodeEditor.resume();
 
         NodeEditor.end();
 
-
-
-
-
-
     }
+
+    public ImString createView = new ImString("", 20);
+    public boolean showCreateView = false;
+
 
     public void showLabel(String label, int color){
         ImGui.setCursorPosY(ImGui.getCursorPosY() - ImGui.getTextLineHeight());
@@ -386,7 +365,7 @@ public class NodeRender {
 
     public boolean CanCreateLink(Pin a, Pin b)
     {
-        if (a == null || b == null || a == b || a.kind == b.kind || a.type != b.type || a.nodeId == b.nodeId)
+        if (a == null || b == null || a == b || a.innerPin.kind == b.innerPin.kind || a.type != b.type || a.nodeId == b.nodeId)
             return false;
 
         return true;
@@ -406,9 +385,11 @@ public class NodeRender {
             case Object:   return new Color( 51, 150, 215);
             case Function: return new Color(218,   0, 183);
             case Delegate: return new Color(255,  48,  48);
+            case TypeScriptSetter: return new Color(138, 14, 14);
             case Vector2: return new Color(140, 63, 168);
             case Vector3: return new Color(140, 63, 168);
             case Vector4: return new Color(140, 63, 168);
+            case Parameter: return new Color(56, 69, 215);
             default:
         }
 
@@ -433,9 +414,11 @@ public class NodeRender {
             case Object:   iconType = IconType.Circle; break;
             case Function: iconType = IconType.Circle; break;
             case Delegate: iconType = IconType.Square; break;
+            case TypeScriptSetter: iconType = IconType.Square; break;
             case Vector2: iconType = IconType.Circle; break;
             case Vector3: iconType = IconType.Circle; break;
             case Vector4: iconType = IconType.Circle; break;
+            case Parameter: iconType = IconType.Circle; break;
             default:
                 return;
         }

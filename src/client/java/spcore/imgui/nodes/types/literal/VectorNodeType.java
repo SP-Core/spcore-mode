@@ -1,71 +1,38 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.literal;
 
 import imgui.ImColor;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
+import spcore.imgui.nodes.types.AbstractNodeType;
 
 import java.util.HashMap;
 
-public class VectorNodeType extends AbstractNodeType{
+public class VectorNodeType extends AbstractNodeType {
     @Override
-    public String getName() {
-        return "vector";
-    }
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
+        node.addInput(new PinInfo("x", PinType.Float));
+        node.addInput(new PinInfo("y", PinType.Float));
+        node.addInput(new PinInfo("z", PinType.Float));
+        node.addInput(new PinInfo("w", PinType.Float));
 
-    @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "x",
-                        PinType.Float)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "y",
-                        PinType.Float)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "z",
-                        PinType.Float)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "w",
-                        PinType.Float)
-        );
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "vector2",
-                        PinType.Vector2));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "vector3",
-                        PinType.Vector3));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "vector4",
-                        PinType.Vector4));
-
+        node.addOutput(new PinInfo("vector2", PinType.Vector2));
+        node.addOutput(new PinInfo("vector3", PinType.Vector3));
+        node.addOutput(new PinInfo("vector4", PinType.Vector4));
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
         Vector4f vector = new Vector4f();
         if(inputs.contains("x")){

@@ -12,6 +12,7 @@ import spcore.js.AssemblyHelper;
 import spcore.js.JsRuntime;
 import spcore.js.functions.GetCommandFunc;
 import spcore.js.functions.GetViewFunc;
+import spcore.js.functions.GetWrapperFunc;
 
 import javax.script.ScriptException;
 import java.io.IOException;
@@ -72,7 +73,7 @@ public class AppEngine {
         runtime.evalVerified("const Objects = ObjectsStatic.static");
         runtime.evalVerified("const Math = MathStatic.static");
         runtime.evalVerified("const HttpHelper = HttpHelperStatic.static");
-
+        runtime.evalVerified("const Time = timeStatic.static");
 //        runtime.evalVerified("const ActionResult = ActionResultStatic.static");
 
         for (var type: AssemblyHelper.allTypes
@@ -100,6 +101,7 @@ public class AppEngine {
             }
         }
 
+        runtime.eval(new GetWrapperFunc());
         runtime.eval(new GetViewFunc());
         runtime.eval(new GetCommandFunc());
         runtime.eval(js);

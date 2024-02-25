@@ -1,48 +1,37 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.view;
 
 import imgui.ImColor;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
+import spcore.imgui.nodes.types.AbstractNodeType;
 import spcore.view.render.Renderable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RepeatNodeType extends AbstractNodeType{
-    @Override
-    public String getName() {
-        return "Repeat";
-    }
+public class RepeatNodeType extends AbstractNodeType {
+
 
     @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
 
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "component",
-                        PinType.Component));
+        node.addInput(new PinInfo("component", PinType.Component));
+        node.addInput(new PinInfo("count", PinType.Int));
 
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "count",
-                        PinType.Int));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "result",
-                        PinType.Components));
-
-        context.nodes.add(node);
+        node.addOutput(new PinInfo("result", PinType.Components));
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         var outputs = new HashMap<String, Object>();
 
         int count = 1;

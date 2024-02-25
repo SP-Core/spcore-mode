@@ -13,7 +13,9 @@ public enum PinType {
     Vector2(9),
     Vector3(10),
     Vector4(11),
-    Styles(12);
+    Styles(12),
+    TypeScriptSetter(13),
+    Parameter(14);
     public final int value;
     private PinType(int value){
         this.value = value;

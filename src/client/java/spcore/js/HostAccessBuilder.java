@@ -6,8 +6,10 @@ import net.minecraft.client.util.SelectionManager;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
 import spcore.engine.models.CommandMapItem;
+import spcore.engine.models.ViewController;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class HostAccessBuilder {
 
@@ -21,6 +23,19 @@ public class HostAccessBuilder {
                     var gson = new Gson();
                     var json = gson.toJson(o);
                     return gson.fromJson(json, CommandMapItem.class);
+                })
+                .targetTypeMapping(Object.class, ViewController.class, o -> {
+                    return o instanceof Map;
+                }, o -> {
+                    var gson = new Gson();
+                    var json = gson.toJson(o);
+                    return gson.fromJson(json, ViewController.class);
+                })
+                .targetTypeMapping(Double.class, Float.class, Objects::nonNull, o -> {
+                    return (float)(o.doubleValue());
+                })
+                .targetTypeMapping(Double.class, Integer.class, Objects::nonNull, o -> {
+                    return  (int)(o.doubleValue());
                 });
     }
 

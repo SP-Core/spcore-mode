@@ -22,7 +22,7 @@ public class BlueprintNodeRender extends AbstractNodeRender {
     @Override
     public void render(Node node) {
         builder.begin(node.id);
-        builder.header(node.color);
+        builder.header();
         ImGui.textUnformatted(node.name);
         ImGui.dummy(0, 28);
 
@@ -43,7 +43,7 @@ public class BlueprintNodeRender extends AbstractNodeRender {
             render.DrawPinIcon(input, render.IsPinLinked(input.id), (int)(alpha * 255));
             ImGui.sameLine(0);
 
-            ImGui.textUnformatted(input.name);
+            ImGui.textUnformatted(input.pinName);
 
             if(render.context.links.stream().noneMatch(p -> p.startPinId.equals(input.id))){
                 ImGui.sameLine(0);
@@ -70,16 +70,16 @@ public class BlueprintNodeRender extends AbstractNodeRender {
             ImGui.pushStyleVar(ImGuiStyleVar.Alpha, alpha);
             ImGui.newLine();
             float i = 0.0f;
-            if (!output.name.isEmpty()) {
-                i = ImGui.calcTextSize(output.name, true).x;
+            if (!output.pinName.isEmpty()) {
+                i = ImGui.calcTextSize(output.pinName, true).x;
             }
             ImGui.sameLine(0);
 
             builder.Output(output.id);
 
-            if (!output.name.isEmpty()) {
+            if (!output.pinName.isEmpty()) {
                 ImGui.sameLine(0, 300 - i);
-                ImGui.textUnformatted(output.name);
+                ImGui.textUnformatted(output.pinName);
             }
             ImGui.sameLine(0);
             render.DrawPinIcon(output, render.IsPinLinked(output.id), (int)(alpha * 255));

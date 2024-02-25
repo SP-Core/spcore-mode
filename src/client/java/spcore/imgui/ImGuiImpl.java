@@ -3,6 +3,7 @@ package spcore.imgui;
 import imgui.*;
 import imgui.extension.imnodes.ImNodes;
 import imgui.extension.implot.ImPlot;
+import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
 import imgui.glfw.ImGuiImplGlfw;
@@ -73,7 +74,57 @@ public class ImGuiImpl {
 
         imGuiImplGlfw.init(handle, true);
         imGuiImplGl3.init();
+
+        var style = ImGui.getStyle();
+        style.setFrameRounding(12);
+        style.setWindowBorderSize(0);
+        style.setWindowRounding(6);
+        style.setColor(ImGuiCol.Text, ImColor.intToColor(217, 217, 217));
+        style.setColor(ImGuiCol.TextDisabled, ImColor.intToColor(185, 185, 185));
+        style.setColor(ImGuiCol.WindowBg, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.ChildBg, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.PopupBg, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.Border, ImColor.intToColor(53, 53, 53));
+        style.setColor(ImGuiCol.BorderShadow, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.FrameBg, ImColor.intToColor(78, 78, 78));
+        style.setColor(ImGuiCol.FrameBgHovered, ImColor.intToColor(64, 64, 64));
+        style.setColor(ImGuiCol.FrameBgActive, ImColor.intToColor(64, 64, 64));
+        style.setColor(ImGuiCol.TitleBg, ImColor.intToColor(64, 64, 64));
+        style.setColor(ImGuiCol.TitleBgActive, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.TitleBgCollapsed, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.MenuBarBg, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.ScrollbarBg, ImColor.intToColor(38, 38, 38));
+        style.setColor(ImGuiCol.ScrollbarGrab, ImColor.intToColor(64, 64, 64));
+
+        style.setColor(ImGuiCol.ScrollbarGrabActive, ImColor.intToColor(78, 78, 78));
+        style.setColor(ImGuiCol.ScrollbarGrabHovered, ImColor.intToColor(78, 78, 78));
+
+        style.setColor(ImGuiCol.CheckMark, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.SliderGrab, ImColor.intToColor(121, 103, 68));
+
+        style.setColor(ImGuiCol.SliderGrabActive, ImColor.intToColor(121, 103, 68));
+
+        style.setColor(ImGuiCol.Button, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.ButtonActive, ImColor.intToColor(153, 129, 83));
+        style.setColor(ImGuiCol.ButtonHovered, ImColor.intToColor(153, 129, 83));
+
+        style.setColor(ImGuiCol.Header, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.HeaderActive, ImColor.intToColor(153, 129, 83));
+        style.setColor(ImGuiCol.HeaderHovered, ImColor.intToColor(153, 129, 83));
+
+        style.setColor(ImGuiCol.Separator, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.SeparatorActive, ImColor.intToColor(153, 129, 83));
+        style.setColor(ImGuiCol.SeparatorHovered, ImColor.intToColor(153, 129, 83));
+
+        style.setColor(ImGuiCol.ResizeGrip, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.ResizeGripActive, ImColor.intToColor(153, 129, 83));
+        style.setColor(ImGuiCol.ResizeGripHovered, ImColor.intToColor(153, 129, 83));
+
+        style.setColor(ImGuiCol.Tab, ImColor.intToColor(121, 103, 68));
+        style.setColor(ImGuiCol.TabActive, ImColor.intToColor(153, 129, 83));
+        style.setColor(ImGuiCol.TabHovered, ImColor.intToColor(153, 129, 83));
     }
+
 
     public static void draw(final RenderInterface runnable) {
 //        imGuiImplGlfw.newFrame(); // Handle keyboard and mouse interactions

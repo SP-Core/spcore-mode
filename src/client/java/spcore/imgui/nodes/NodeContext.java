@@ -1,39 +1,28 @@
 package spcore.imgui.nodes;
 
-import com.google.gson.Gson;
-import com.mojang.authlib.minecraft.client.ObjectMapper;
-import imgui.ImGui;
-import imgui.ImVec2;
 import imgui.extension.nodeditor.NodeEditor;
 import imgui.extension.nodeditor.NodeEditorConfig;
 import imgui.extension.nodeditor.NodeEditorContext;
-import imgui.type.ImInt;
 import net.minecraft.client.gui.screen.Screen;
-import org.apache.commons.compress.utils.IOUtils;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBImage;
-import spcore.GlobalContext;
-import spcore.imgui.ImGuiImpl;
+import spcore.engine.models.ViewController;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.models.Link;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.SetterInfo;
+import spcore.imgui.nodes.models.ViewScope;
 import spcore.imgui.nodes.processor.ProcessService;
-import spcore.imgui.nodes.utils.ImageLoader;
 import spcore.view.ViewComponent;
 import spcore.view.render.Renderable;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 
 public class NodeContext {
 
     public final NodeEditorContext context;
-    private final String viewName;
     private final NodeEditorConfig config;
     public List<Node> nodes;
     public List<Link> links;
@@ -43,14 +32,18 @@ public class NodeContext {
     public int height;
     private int lastId = 1;
     public boolean init = false;
-    public final Screen screen;
+    public ViewScope scope;
+    private final NodeProvider nodeProvider;
 
-    public NodeContext(String viewName, Screen screen) throws IOException {
-        this.viewName = viewName;
-        this.screen = screen;
+    public HashMap<String, List<SetterInfo>> setters = new HashMap<>();
+    public HashMap<String, List<Renderable>> last_wrappers = new HashMap<>();
+    public final Optional<ViewController> viewController;
+    public NodeContext(Optional<ViewController> viewController, NodeProvider nodeProvider, String blueprintPath) throws IOException {
+        this.viewController = viewController;
+        this.nodeProvider = nodeProvider;
         load();
         this.config = new NodeEditorConfig();
-        this.config.setSettingsFile("studio-views/" + viewName + ".blueprint.json");
+        this.config.setSettingsFile(blueprintPath);
         this.context = new NodeEditorContext(config);
         this.render = new NodeRender(this);
 
@@ -68,82 +61,56 @@ public class NodeContext {
             NodeEditor.setCurrentEditor(context);
             init = true;
         }
+
     }
 
 
     public boolean save(){
-        var vf = new ViewFile();
+        var vf = new NodeProvider.ViewFile();
         vf.lastId = this.lastId;
         vf.nodes = this.nodes;
         vf.links = this.links;
-        var mapper = new ObjectMapper(new Gson());
-        var json = mapper.writeValueAsString(vf);
-        var mainFolder = new File("studio-views");
-        var hashFile = new File(mainFolder, viewName + ".hash");
-        try {
-            if(Files.exists(hashFile.toPath())){
-                var lastHash = Files.readString(hashFile.toPath());
-                if(Integer.parseInt(lastHash) == json.hashCode()){
-                    return false;
-                }
-            }
 
-            var viewFile = new File(mainFolder, viewName + ".view.json");
-
-            Files.writeString(viewFile.toPath(),json);
-            Files.writeString(hashFile.toPath(), Integer.toString(json.hashCode()));
-        } catch (IOException e) {
-            GlobalContext.LOGGER.error(e.getMessage());
-        }
-
-        return true;
+        return nodeProvider.save(vf);
     }
 
     public void load() throws IOException {
-        var mainFolder = new File("studio-views");
-        if(!Files.exists(mainFolder.toPath())){
-            Files.createDirectories(mainFolder.toPath());
+
+        var f = nodeProvider.load();
+        this.nodes = f.nodes;
+        this.links = f.links;
+        this.lastId = f.lastId;
+
+        for (var node: nodes
+        ) {
+            node.init();
         }
 
-        var viewFile = new File(mainFolder, viewName + ".view.json");
-        if(!Files.exists(viewFile.toPath())){
-            this.nodes = new ArrayList<>();
-            this.links = new ArrayList<>();
-            this.lastId = 1;
-            save();
-            return;
-        }
 
-        var json = Files.readString(viewFile.toPath());
-        var mapper = new ObjectMapper(new Gson());
-        var vf = mapper.readValue(json, ViewFile.class);
-        this.nodes = vf.nodes;
-        this.lastId = vf.lastId;
-        this.links = vf.links;
-
-        var hashFile = new File(mainFolder, viewName + ".hash");
-        Files.writeString(hashFile.toPath(), Integer.toString(json.hashCode()));
     }
 
 
-
-    private static class ViewFile{
-        public List<Node> nodes;
-        public List<Link> links;
-        private int lastId;
-
+    public void setter(String id, String key, String value){
+        if(setters.containsKey(id)){
+            setters.get(id).add(new SetterInfo(id, key, value));
+        }
+        else{
+            setters.put(id, new ArrayList<>());
+            setters.get(id).add(new SetterInfo(id, key, value));
+        }
     }
 
-    public Renderable startProcess(boolean debugShow){
 
+    public Renderable startProcess(boolean debugShow, ViewScope scope){
+
+        this.scope = scope;
         var data = new ProcessService.ProcessData();
+
         var devRenderNodes =
-                nodes.stream().filter(p -> p.name.equals("Dev render"))
+                nodes.stream().filter(p -> p.innerType == NodeType.DevRender)
                         .toList();
 
-        var devNodeType = render.nodeTypes
-                .stream().filter(p -> p.getName().equals("Dev render"))
-                .findAny().get();
+        var devNodeType = NodeType.DevRender.nodeType;
 
         List<Renderable> devComponents = new ArrayList<>();
         for (var node: devRenderNodes
@@ -154,12 +121,10 @@ public class NodeContext {
         }
 
         var renderNodes =
-                nodes.stream().filter(p -> p.name.equals("render"))
+                nodes.stream().filter(p -> p.innerType == NodeType.Render)
                         .toList();
 
-        var nodeType = render.nodeTypes
-                .stream().filter(p -> p.getName().equals("render"))
-                .findAny().get();
+        var nodeType = NodeType.Render.nodeType;
 
         var view = new ViewComponent();
         for (var node: renderNodes
@@ -176,31 +141,11 @@ public class NodeContext {
             }
         }
 
+        this.last_wrappers = data.wrappers;
 
         return view;
     }
 
-//     try {
-//
-//        textureId = loadTexture("/gui/blueprint/BlueprintBackground.png");
-//    } catch (IOException e) {
-//        throw new RuntimeException(e);
-//    }
 
-    //    public int loadTexture(String name) throws IOException {
-////        var r = ImGuiImpl.class
-////                .getResourceAsStream(name);
-////        byte[] bytes = IOUtils.toByteArray(r);
-////        var buffer = ByteBuffer.wrap(bytes);
-////
-////        ByteBuffer imageBuffer = STBImage.stbi_load_from_memory(buffer, BufferUtils.createIntBuffer(1), BufferUtils.createIntBuffer(1), BufferUtils.createIntBuffer(1), 4);
-//
-//        width = 1;
-//        height = 1;
-////        int channels = imageBuffer.getInt();
-//
-////        return 1; ImageLoader.loadImageFromImageBuffer(buffer, width, height);
-//        return 1;
-//    }
 
 }

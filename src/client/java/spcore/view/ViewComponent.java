@@ -32,15 +32,15 @@ public class ViewComponent extends Renderable implements Drawable {
     protected void internalRender(DrawContext context, int mouseX, int mouseY, float delta) {
 
 
-        int x1 = getX(); int y1 = getY(); int x2 = getX2(); int y2 = getY2();
+        float x1 = getX(); float y1 = getY(); float x2 = getX2(); float y2 = getY2();
         if (x1 < x2) {
-            int i = x1;
+            float i = x1;
             x1 = x2;
             x2 = i;
         }
 
         if (y1 < y2) {
-            int i = y1;
+            float i = y1;
             y1 = y2;
             y2 = i;
         }
@@ -137,11 +137,11 @@ public class ViewComponent extends Renderable implements Drawable {
     }
 
 
-    public int getX2() {
+    public float getX2() {
         return getX() + getWidth();
     }
 
-    public int getY2() {
+    public float getY2() {
         return getY() + getHeight();
     }
 

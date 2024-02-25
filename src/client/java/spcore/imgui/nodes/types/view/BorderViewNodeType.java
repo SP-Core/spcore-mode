@@ -1,37 +1,25 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.view;
 
-import net.minecraft.client.MinecraftClient;
-import org.joml.Vector4f;
-import org.w3c.dom.Text;
-import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
-import spcore.imgui.nodes.inputs.Vector4ValueInput;
 import spcore.imgui.nodes.models.Node;
-import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.NodeInfo;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.view.ViewComponent;
 import spcore.view.components.BorderableComponent;
-import spcore.view.components.TextComponent;
 
 import java.util.HashMap;
 
 public class BorderViewNodeType extends ViewNodeType {
-    @Override
-    public String getName() {
-        return "Border view";
-    }
+
 
     @Override
-    public Node create(NodeContext context) {
-        var node = super.create(context);
-        node.inputs.add(new Pin(context.nextId(),
-                "border-top",
-                PinType.Int));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = super.internalCreateInfo(nt);
 
-        node.inputs.add(new Pin(context.nextId(),
-                "border-bottom",
-                PinType.Int));
-
+        node.addInput(new PinInfo("border-top", PinType.Int));
+        node.addInput(new PinInfo("border-bottom", PinType.Int));
         return node;
     }
 
@@ -41,8 +29,8 @@ public class BorderViewNodeType extends ViewNodeType {
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
-        var outputs = super.process(node, inputs);
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
+        var outputs = super.internalProcess(node, inputs);
 
         var component = (ViewComponent) outputs.get("component");
 

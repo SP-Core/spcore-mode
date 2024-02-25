@@ -16,12 +16,12 @@ public class BorderableComponent extends ViewComponent {
     @Override
     protected void internalRender(DrawContext context, int mouseX, int mouseY, float delta) {
         super.internalRender(context, mouseX, mouseY, delta);
-        int x1 = getX(); int y1 = getY(); int x2 = getX2(); int y2 = getY2();
+        float x1 = getX(); float y1 = getY(); float x2 = getX2(); float y2 = getY2();
 
-        int top;
-        int left;
-        int right;
-        int bottom;
+        float top;
+        float left;
+        float right;
+        float bottom;
         if(y1 > y2){
             top = y2;
             bottom = y1;

@@ -12,6 +12,7 @@ import org.graalvm.polyglot.Source;
 import org.graalvm.polyglot.Value;
 import spcore.GlobalContext;
 import spcore.api.AuthContext;
+import spcore.engine.TimeApi;
 import spcore.js.functions.JsFunc;
 
 import javax.script.*;
@@ -49,6 +50,7 @@ public class JsRuntime {
         bindings.putMember("ObjectsStatic", Objects.class);
         bindings.putMember("MathStatic", Math.class);
         bindings.putMember("HttpHelperStatic", HttpHelper.class);
+        bindings.putMember("timeStatic", TimeApi.class);
 
         for (var type: AssemblyHelper.allTypes
              ) {

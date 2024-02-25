@@ -2,9 +2,12 @@ package spcore.imgui.nodes.types.guides;
 
 import imgui.ImColor;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.imgui.nodes.types.AbstractNodeType;
 import spcore.view.ViewComponent;
@@ -12,46 +15,28 @@ import spcore.view.render.Renderable;
 
 import java.util.HashMap;
 
-public class Quide extends AbstractNodeType {
-    @Override
-    public String getName() {
-        return "Quide";
-    }
+public class Guide extends AbstractNodeType {
+
 
     @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "id",
-                        PinType.String));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "value",
-                        PinType.Float));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "horizontal",
-                        PinType.Bool));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "component",
-                        PinType.Component));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
+        node.addInput(new PinInfo("id", PinType.String));
+        node.addInput(new PinInfo("value", PinType.Float));
+        node.addInput(new PinInfo("horizontal", PinType.Bool));
+        node.addOutput(new PinInfo("component", PinType.Component));
 
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
         var view = new ViewComponent();
         view.getStyle().styles
-                .put(Renderable.RenderableStyles.PARENT_WIDTH, Integer.toString(inputs.render.context.screen.width));
+                .put(Renderable.RenderableStyles.PARENT_WIDTH, Float.toString(inputs.render.context.scope.width));
         view.getStyle().styles
-                .put(Renderable.RenderableStyles.PARENT_HEIGHT, Integer.toString(inputs.render.context.screen.height));
+                .put(Renderable.RenderableStyles.PARENT_HEIGHT, Float.toString(inputs.render.context.scope.height));
 
         outputs.put("component", view);
         view.setBackground("#8ccf4a4a");
@@ -71,13 +56,13 @@ public class Quide extends AbstractNodeType {
         }
 
         if(horizontal){
-            view.setWidth(inputs.render.context.screen.width);
+            view.setWidth(inputs.render.context.scope.width);
             view.setHeight(1);
             view.setY(Float.toString(value) + "%");
             inputs.data.horizontals.put(id, view.getY());
         }
         else{
-            view.setHeight(inputs.render.context.screen.height);
+            view.setHeight(inputs.render.context.scope.height);
             view.setWidth(1);
             view.setX(Float.toString(value) + "%");
             inputs.data.verticals.put(id, view.getX());

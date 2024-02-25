@@ -27,12 +27,12 @@ public class ComponentTooltipPositioner implements TooltipPositioner {
 
         vector2i.y += 3;
         int i = height + 3 + 3;
-        int j = this.component.getY() + this.component.getHeight() + 3 + getOffsetY(0, 0, this.component.getHeight());
+        int j = (int)this.component.getY() + (int)this.component.getHeight() + 3 + getOffsetY(0, 0, (int)this.component.getHeight());
         int k = screenHeight - 5;
         if (j + i <= k) {
-            vector2i.y += getOffsetY(vector2i.y, this.component.getY(), this.component.getHeight());
+            vector2i.y += getOffsetY(vector2i.y, (int)this.component.getY(), (int)this.component.getHeight());
         } else {
-            vector2i.y -= i + getOffsetY(vector2i.y, this.component.getY() + this.component.getHeight(), this.component.getHeight());
+            vector2i.y -= i + getOffsetY(vector2i.y, (int)this.component.getY() + (int)this.component.getHeight(), (int)this.component.getHeight());
         }
 
         return vector2i;

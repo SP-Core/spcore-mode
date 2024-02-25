@@ -1,9 +1,11 @@
 package spcore.imgui.nodes.processor;
 
 import spcore.imgui.nodes.NodeRender;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.models.Link;
 import spcore.imgui.nodes.models.Node;
 import spcore.imgui.nodes.models.NodeId;
+import spcore.view.render.Renderable;
 
 import java.util.*;
 
@@ -22,7 +24,7 @@ public class ProcessService {
 
     public Object process(String key){
         var pin = node.inputs.stream()
-                .filter(p -> p.name.equals(key))
+                .filter(p -> p.pinName.equals(key))
                 .findFirst();
 
         if(pin.isEmpty()){
@@ -45,7 +47,7 @@ public class ProcessService {
 
     public <T> List<T> processes(String key, Class<T> clazz){
         var pin = node.inputs.stream()
-                .filter(p -> p.name.equals(key))
+                .filter(p -> p.pinName.equals(key))
                 .findFirst()
                 .get();
 
@@ -84,20 +86,18 @@ public class ProcessService {
                 .findFirst()
                 .get();
 
-        var pType = render.nodeTypes
-                .stream().filter(p -> p.getName().equals(childNode.get().name))
-                .findFirst()
-                .get();
+
+        var pType = NodeType.valueOf(childNode.get().nodeType).nodeType;
 
         var ps = new ProcessService(childNode.get(), render, data);
 
         var outs = pType.process(childNode.get(), ps);
-        return outs.get(outPin.name);
+        return outs.get(outPin.pinName);
     }
 
 
     public boolean contains(String key){
-        return process(key) != null;
+        return process(key) != null; //сделать без исполнения процесса
     }
 
     public static class ProcessData{
@@ -105,8 +105,10 @@ public class ProcessService {
 
         public final HashMap<NodeId, HashMap<String, Object>> statics = new HashMap<>();
 
-        public final HashMap<String, Integer> verticals = new HashMap<>();
-        public final HashMap<String, Integer> horizontals = new HashMap<>();
+        public final HashMap<String, Float> verticals = new HashMap<>();
+        public final HashMap<String, Float> horizontals = new HashMap<>();
+
+        public final HashMap<String, List<Renderable>> wrappers = new HashMap<>();
     }
 }
 

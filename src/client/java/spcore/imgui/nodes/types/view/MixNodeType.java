@@ -1,12 +1,16 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.view;
 
 import imgui.ImColor;
 import org.joml.Vector2f;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
+import spcore.imgui.nodes.types.AbstractNodeType;
 import spcore.view.ViewComponent;
 import spcore.view.render.Renderable;
 
@@ -14,40 +18,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
-public class MixNodeType extends AbstractNodeType{
+public class MixNodeType extends AbstractNodeType {
     @Override
-    public String getName() {
-        return "Mix";
-    }
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
 
-    @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(),
-                ImColor.floatToColor(255, 128, 128));
+        node.addInput(new PinInfo("parent", PinType.Component));
+        node.addInput(new PinInfo("components", PinType.Components));
 
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "parent",
-                        PinType.Component));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "components",
-                        PinType.Components));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "output",
-                        PinType.Component));
-
-
-        context.nodes.add(node);
-
+        node.addOutput(new PinInfo("output", PinType.Component));
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
 
         var parent = (Renderable)inputs.process("parent");

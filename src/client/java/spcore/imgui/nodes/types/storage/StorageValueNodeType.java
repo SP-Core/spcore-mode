@@ -1,11 +1,15 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.storage;
 
 import imgui.ImColor;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
+import spcore.imgui.nodes.types.AbstractNodeType;
 
 import java.util.HashMap;
 
@@ -13,39 +17,18 @@ public class StorageValueNodeType extends AbstractNodeType {
 
 
     @Override
-    public String getName() {
-        return "Storage";
-    }
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
+        node.addInput(new PinInfo("int", PinType.Int));
+        node.addInput(new PinInfo("float", PinType.Float));
 
-    @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "int",
-                        PinType.Int));
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "float",
-                        PinType.Float));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "int",
-                        PinType.Int));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "float",
-                        PinType.Float));
-
+        node.addOutput(new PinInfo("int", PinType.Int));
+        node.addOutput(new PinInfo("float", PinType.Float));
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         if(inputs.data.statics.containsKey(node.id)){
             return inputs.data.statics.get(node.id);
         }

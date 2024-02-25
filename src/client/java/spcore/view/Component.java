@@ -14,17 +14,17 @@ public interface Component {
 
     void setY(String y);
 
-    int getX();
+    float getX();
 
-    int getY();
+    float getY();
 
-    int getWidth();
+    float getWidth();
 
-    int getHeight();
+    float getHeight();
 
-    default ScreenRect getNavigationFocus() {
-        return new ScreenRect((int)this.getX(), (int)this.getY(), this.getWidth(), this.getHeight());
-    }
+//    default ScreenRect getNavigationFocus() {
+//        return new ScreenRect((int)this.getX(), (int)this.getY(), this.getWidth(), this.getHeight());
+//    }
 
 
     void forEachChild(Consumer<Renderable> consumer);

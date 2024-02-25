@@ -1,5 +1,7 @@
 package spcore.view.styles;
 
+import spcore.GlobalContext;
+
 import java.util.HashMap;
 
 public abstract class ComponentStyle {
@@ -7,6 +9,7 @@ public abstract class ComponentStyle {
     protected final HashMap<String, CasterEvent> casters = new HashMap<>();
     private boolean enableCache = false;
     private final HashMap<String, HashMap<String,Object>> cache = new HashMap<>();
+    public final HashMap<String, Object> data = new HashMap<>();
     public <T> T get(String key, Class<T> clazz){
         var v = styles.get(key);
         if(v == null || v.equals("null"))
@@ -16,7 +19,10 @@ public abstract class ComponentStyle {
             var cv = cache.get(key);
             if(cv != null){
                 var fe = cv.get(v);
-                return (T) fe;
+                if(fe != null){
+                    return (T) fe;
+                }
+
             }
         }
 

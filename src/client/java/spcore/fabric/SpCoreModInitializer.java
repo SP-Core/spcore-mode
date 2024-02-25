@@ -31,6 +31,7 @@ import spcore.fabric.eventHandlers.TreeHandler;
 import spcore.fabric.handlers.TerminalHandler;
 import spcore.fabric.screens.AppResolverScreen;
 import spcore.fabric.screens.studio.StudioView;
+import spcore.fabric.screens.studio.windows.GuiNodesWindow;
 
 import javax.script.ScriptException;
 import java.io.IOException;
@@ -106,9 +107,13 @@ public class SpCoreModInitializer implements ClientModInitializer {
 			}
 
 			if(screen instanceof StudioView view){
-				if(view.nodeContext.init){
-					if(view.nodeContext.save()){
-						view.restart();
+
+				for (var nc: GuiNodesWindow.getContexts()
+					 ) {
+					if(nc.init){
+						if(nc.save()){
+							view.restart();
+						}
 					}
 				}
 

@@ -16,9 +16,11 @@ public class FloatValueInput extends AbstractValueInput{
         else{
             value = new ImFloat(0);
         }
+        ImGui.pushID(pin.id.toString());
         ImGui.pushItemWidth(200);
-        if(ImGui.inputFloat(pin.name, value)){
+        if(ImGui.inputFloat(pin.pinName, value, 0.1f, 10.0f, "%.3f")){
             node.values.put(pin.id.value, value.toString());
         }
+        ImGui.popID();
     }
 }

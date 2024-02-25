@@ -1,15 +1,19 @@
-package spcore.imgui.nodes.types;
+package spcore.imgui.nodes.types.view;
 
 import imgui.ImColor;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
 import org.joml.Vector4f;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.inputs.Vector4ValueInput;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
+import spcore.imgui.nodes.types.AbstractNodeType;
 import spcore.view.ViewComponent;
 import spcore.view.components.BorderableComponent;
 import spcore.view.render.Renderable;
@@ -17,75 +21,22 @@ import spcore.view.render.Renderable;
 import java.util.HashMap;
 
 public class ViewNodeType extends AbstractNodeType {
-    @Override
-    public String getName() {
-        return "View";
-    }
 
     @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(),
-                ImColor.floatToColor(255, 128, 128));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
 
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "parent",
-                        PinType.Component));
+        node.addInput(new PinInfo("parent", PinType.Component));
+        node.addInput(new PinInfo("width", PinType.Float));
+        node.addInput(new PinInfo("height", PinType.Float));
+        node.addInput(new PinInfo("position", PinType.Vector2));
+        node.addInput(new PinInfo("regular", PinType.Bool));
+        node.addInput(new PinInfo("position-rotate", PinType.Float));
+        node.addInput(new PinInfo("position-lock-x", PinType.Bool));
+        node.addInput(new PinInfo("position-lock-y", PinType.Bool));
+        node.addInput(new PinInfo("background-color", PinType.Vector4));
 
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "width",
-                        PinType.Int)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "height",
-                        PinType.Int)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "position",
-                        PinType.Vector2)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "regular",
-                        PinType.Bool)
-        );
-
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "position-rotate",
-                        PinType.Float)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "position-lock-x",
-                        PinType.Bool)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "position-lock-y",
-                        PinType.Bool)
-        );
-
-        node.inputs.add(
-                new Pin(context.nextId(),
-                        "background-color",
-                        PinType.Vector4)
-        );
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "component",
-                        PinType.Component));
-
+        node.addOutput(new PinInfo("component", PinType.Component));
         return node;
     }
 
@@ -94,7 +45,7 @@ public class ViewNodeType extends AbstractNodeType {
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
         var view = createComponent();
         if(inputs.contains("parent")){
@@ -102,17 +53,29 @@ public class ViewNodeType extends AbstractNodeType {
         }
 
         if(inputs.contains("width")){
-            view.setWidth((int)inputs.process("width"));
+            var w = inputs.process("width");
+            if(w instanceof Float f){
+                view.setWidth(f);
+            }
+            else{
+                view.setWidth((int)w);
+            }
         }
         else if(node.containsInputValue("width")){
-            view.setWidth(Integer.parseInt(node.getInputValue("width")));
+            view.setWidth(Float.parseFloat(node.getInputValue("width")));
         }
 
         if(inputs.contains("height")){
-            view.setHeight((int)inputs.process("height"));
+            var h = inputs.process("height");
+            if(h instanceof Float f){
+                view.setHeight(f);
+            }
+            else{
+                view.setHeight((int)h);
+            }
         }
         else if(node.containsInputValue("height")){
-            view.setHeight(Integer.parseInt(node.getInputValue("height")));
+            view.setHeight(Float.parseFloat(node.getInputValue("height")));
         }
 
         if(inputs.contains("position")){

@@ -14,7 +14,7 @@ public class BlueprintNodeBuilder {
     private int HeaderTextureHeight;
     private NodeId CurrentNodeId;
     private Stage CurrentStage;
-    private int HeaderColor;
+//    private int HeaderColor;
     private ImVec2 NodeMin;
     private ImVec2 NodeMax;
     private ImVec2 HeaderMin;
@@ -33,8 +33,7 @@ public class BlueprintNodeBuilder {
     }
 
 
-    public void header(int color){
-        this.HeaderColor = color;
+    public void header(){
         SetStage(Stage.Header);
     }
 
@@ -70,7 +69,7 @@ public class BlueprintNodeBuilder {
 
             float halfBorderWidth = NodeEditor.getStyle().getNodeBorderWidth() * 0.5f;
 
-            int headerColor = ImColor.floatToColor(0, 0, 0, alpha) | (HeaderColor & ImColor.floatToColor(255, 255, 255, 0));
+//            int headerColor = ImColor.floatToColor(0, 0, 0, alpha) | (HeaderColor & ImColor.floatToColor(255, 255, 255, 0));
             if ((HeaderMax.x > HeaderMin.x) && (HeaderMax.y > HeaderMin.y)) {
 //                ImVec2 uv = new ImVec2(
 //                        (HeaderMax.x - HeaderMin.x) / (float) (4.0f * HeaderTextureWidth),

@@ -43,15 +43,15 @@ public class GridComponent extends ViewComponent {
 
         for(var e : this.children) {
             if(e instanceof Element element2 && element2.renderable instanceof GridElementContainer container){
-                int k = element2.getHeight() - (container.getOccupiedRows() - 1) * this.getRowSpacing();
-                Divider divider = new Divider(k, container.getOccupiedRows());
+                float k = element2.getHeight() - (container.getOccupiedRows() - 1) * this.getRowSpacing();
+                Divider divider = new Divider((int)k, container.getOccupiedRows());
 
                 for(int l = container.getRow(); l <= element2.getRowEnd(); ++l) {
                     js[l] = Math.max(js[l], divider.nextInt());
                 }
 
-                int l = element2.getWidth() - (container.getOccupiedColumns() - 1) * this.getColumnSpacing();
-                Divider divider2 = new Divider(l, container.getOccupiedColumns());
+                float l = element2.getWidth() - (container.getOccupiedColumns() - 1) * this.getColumnSpacing();
+                Divider divider2 = new Divider((int)l, container.getOccupiedColumns());
 
                 for(int m = container.getColumn(); m <= element2.getColumnEnd(); ++m) {
                     is[m] = Math.max(is[m], divider2.nextInt());
@@ -59,8 +59,8 @@ public class GridComponent extends ViewComponent {
             }
         }
 
-        int[] ks = new int[j + 1];
-        int[] ls = new int[i + 1];
+        float[] ks = new float[j + 1];
+        float[] ls = new float[i + 1];
         ks[0] = 0;
 
         for(int k = 1; k <= j; ++k) {
@@ -101,8 +101,8 @@ public class GridComponent extends ViewComponent {
 
         }
 
-        this.style.styles.put(ViewStyles.WIDTH, Integer.toString(ks[j] + is[j]));
-        this.style.styles.put(ViewStyles.HEIGHT, Integer.toString(ls[i] + js[i]));
+        this.style.styles.put(ViewStyles.WIDTH, Float.toString(ks[j] + is[j]));
+        this.style.styles.put(ViewStyles.HEIGHT, Float.toString(ls[i] + js[i]));
     }
 
 

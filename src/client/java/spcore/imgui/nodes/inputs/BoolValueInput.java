@@ -17,7 +17,7 @@ public class BoolValueInput extends AbstractValueInput{
             value = new ImBoolean(false);
         }
         ImGui.pushItemWidth(200);
-        if(ImGui.checkbox(pin.name, value)){
+        if(ImGui.checkbox(pin.pinName, value)){
             node.values.put(pin.id.value, Boolean.toString(value.get()));
         }
     }

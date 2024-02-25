@@ -2,42 +2,33 @@ package spcore.imgui.nodes.types.variables;
 
 import imgui.ImColor;
 import spcore.imgui.nodes.NodeContext;
+import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
 import spcore.imgui.nodes.models.Node;
+import spcore.imgui.nodes.models.NodeInfo;
 import spcore.imgui.nodes.models.Pin;
+import spcore.imgui.nodes.models.PinInfo;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.imgui.nodes.types.AbstractNodeType;
 
 import java.util.HashMap;
 
 public class ScreenNodeType extends AbstractNodeType {
-    @Override
-    public String getName() {
-        return "screen vars";
-    }
 
     @Override
-    public Node create(NodeContext context) {
-        var node = new Node(context.nextId(), getName(), ImColor.floatToColor(255, 128, 128));
+    public NodeInfo internalCreateInfo(NodeType nt) {
+        var node = new NodeInfo(nt);
 
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "width",
-                        PinType.Int));
-
-        node.outputs.add(
-                new Pin(context.nextId(),
-                        "height",
-                        PinType.Int));
-
+        node.addOutput(new PinInfo("width", PinType.Float));
+        node.addOutput(new PinInfo("height", PinType.Float));
         return node;
     }
 
     @Override
-    public HashMap<String, Object> process(Node node, ProcessService inputs) {
+    public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         var outputs = new HashMap<String, Object>();
-        outputs.put("width", inputs.render.context.screen.width);
-        outputs.put("height", inputs.render.context.screen.height);
+        outputs.put("width", (float)inputs.render.context.scope.width);
+        outputs.put("height", (float)inputs.render.context.scope.height);
 
         return outputs;
     }

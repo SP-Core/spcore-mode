@@ -45,7 +45,7 @@ public class TerminalHandler {
 //        var ff = new PositionedSoundInstance(SoundEvent.of(Id), SoundCategory.MASTER, 1, 1, Random.create(11), player.getX(), player.getY(), player.getZ());
 //        MinecraftClient.getInstance()
 //                        .getSoundManager().play(ff);
-        MinecraftClient.getInstance().setScreen(new StudioView("index"));
+        //MinecraftClient.getInstance().setScreen(new StudioView("index2"));
 
 //        assert MinecraftClient.getInstance().player != null;
 //        SharedConstants.isDevelopment = true;

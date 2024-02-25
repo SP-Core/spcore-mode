@@ -22,6 +22,7 @@ public class ScriptExceptionScreen extends Screen {
     public ScriptExceptionScreen(SpCoreInfo app, Exception e) {
         super(Text.of(""));
 
+        e.printStackTrace();
         mainText = Text.of("У приложения " + app.manifest.name + " произошла ошибка");
         int chunkSize = 60;
 

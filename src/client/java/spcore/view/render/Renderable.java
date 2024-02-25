@@ -7,6 +7,7 @@ import net.minecraft.client.gui.widget.LayoutWidget;
 import net.minecraft.client.gui.widget.Positioner;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Vector2i;
+import spcore.GlobalContext;
 import spcore.view.Component;
 import spcore.view.styles.ComponentStyle;
 
@@ -39,8 +40,8 @@ public abstract class Renderable implements Component, Drawable {
     public void configure(Renderable parent, RenderContext render){
         this.parent = parent;
         if(parent != null){
-            this.style.styles.put(RenderableStyles.PARENT_WIDTH, Integer.toString(parent.getWidth()));
-            this.style.styles.put(RenderableStyles.PARENT_HEIGHT, Integer.toString(parent.getHeight()));
+            this.style.styles.put(RenderableStyles.PARENT_WIDTH, Float.toString(parent.getWidth()));
+            this.style.styles.put(RenderableStyles.PARENT_HEIGHT, Float.toString(parent.getHeight()));
         }
         else{
             this.style.styles.put(RenderableStyles.PARENT_WIDTH, this.style.styles.get(RenderableStyles.WIDTH));
@@ -54,11 +55,11 @@ public abstract class Renderable implements Component, Drawable {
     }
 
     public void cache(){
-        this.style.cache();
-        for (var child: children
-        ) {
-            child.renderable.cache();
-        }
+//        this.style.cache();
+//        for (var child: children
+//        ) {
+//            child.renderable.cache();
+//        }
     }
 
     public void addChild(Renderable renderable, Positioner positioner){
@@ -98,7 +99,7 @@ public abstract class Renderable implements Component, Drawable {
     @Override
     public void setX(String x) {
         style.styles.put(RenderableStyles.POS_X1, x);
-        int bx = style.get(RenderableStyles.POS_X1, int.class);
+        float bx = style.get(RenderableStyles.POS_X1, float.class);
         this.forEachChild(element -> {
             float j = element.getX() + bx;
             element.setX(Float.toString(j));
@@ -109,7 +110,7 @@ public abstract class Renderable implements Component, Drawable {
     @Override
     public void setY(String y) {
         style.styles.put(RenderableStyles.POS_Y1, y);
-        int by = style.get(RenderableStyles.POS_Y1, int.class);
+        float by = style.get(RenderableStyles.POS_Y1, float.class);
         this.forEachChild(element -> {
             float j = element.getY() + by;
             element.setY(Float.toString(j));
@@ -117,31 +118,31 @@ public abstract class Renderable implements Component, Drawable {
     }
 
     @Override
-    public int getX() {
-        return style.get(RenderableStyles.POS_X1, int.class);
+    public float getX() {
+        return style.get(RenderableStyles.POS_X1, float.class);
     }
 
     @Override
-    public int getY() {
-        return style.get(RenderableStyles.POS_Y1, int.class);
+    public float getY() {
+        return style.get(RenderableStyles.POS_Y1, float.class);
     }
 
     @Override
-    public int getWidth() {
-        return style.get(RenderableStyles.WIDTH, int.class);
+    public float getWidth() {
+        return style.get(RenderableStyles.WIDTH, float.class);
     }
 
     @Override
-    public int getHeight() {
-        return style.get(RenderableStyles.HEIGHT, int.class);
+    public float getHeight() {
+        return style.get(RenderableStyles.HEIGHT, float.class);
     }
 
-    public void setWidth(int i) {
-        style.styles.put(RenderableStyles.WIDTH, Integer.toString(i));
+    public void setWidth(float i) {
+        style.styles.put(RenderableStyles.WIDTH, Float.toString(i));
     }
 
-    public void setHeight(int i) {
-        style.styles.put(RenderableStyles.HEIGHT, Integer.toString(i));
+    public void setHeight(float i) {
+        style.styles.put(RenderableStyles.HEIGHT, Float.toString(i));
     }
 
 
@@ -156,6 +157,28 @@ public abstract class Renderable implements Component, Drawable {
     public Renderable getParent() {
         return parent;
     }
+
+    public float getFloatStyle(String id){
+        return style.get(id, float.class);
+    }
+
+    public void setFloatStyle(String id, float value){
+        //GlobalContext.LOGGER.info(id + ": " + value);
+        style.styles.put(id, Float.toString(value));
+    }
+
+    public Float getFloatData(String id){
+        var v = style.data.get(id);
+        if(v == null){
+            return null;
+        }
+        return (float) v;
+    }
+
+    public void setFloatData(String id, float value){
+        style.data.put(id, value);
+    }
+
 
     public void setParent(Renderable parent) {
         this.parent = parent;
@@ -173,15 +196,15 @@ public abstract class Renderable implements Component, Drawable {
             this.positioner = positioner.toImpl();
         }
 
-        public int getHeight() {
+        public float getHeight() {
             return this.renderable.getHeight() + this.positioner.marginTop + this.positioner.marginBottom;
         }
 
-        public int getWidth() {
+        public float getWidth() {
             return this.renderable.getWidth() + this.positioner.marginLeft + this.positioner.marginRight;
         }
 
-        public void setX(int left, int right) {
+        public void setX(float left, float right) {
             float f = (float)this.positioner.marginLeft;
             float g = (float)(right - this.renderable.getWidth() - this.positioner.marginRight);
             int i = (int) MathHelper.lerp(this.positioner.relativeX, f, g);
@@ -190,7 +213,7 @@ public abstract class Renderable implements Component, Drawable {
             this.renderable.setX(Float.toString(i + left));
         }
 
-        public void setY(int top, int bottom) {
+        public void setY(float top, float bottom) {
             float f = (float)this.positioner.marginTop;
             float g = (float)(bottom - this.renderable.getHeight() - this.positioner.marginBottom);
             int i = Math.round(MathHelper.lerp(this.positioner.relativeY, f, g));
@@ -208,35 +231,35 @@ public abstract class Renderable implements Component, Drawable {
         public static final String POS_X1 = "position-x1";
         public static final String POS_Y1 = "position-y1";
         public RenderableStyles(){
-            addHandler(WIDTH, "5", int.class, Integer::parseInt);
-            addHandler(HEIGHT, "5", int.class, Integer::parseInt);
-            addHandler(PARENT_WIDTH, "5", int.class, Integer::parseInt);
-            addHandler(PARENT_HEIGHT, "5", int.class, Integer::parseInt);
+            addHandler(WIDTH, "5", float.class, Float::parseFloat);
+            addHandler(HEIGHT, "5", float.class, Float::parseFloat);
+            addHandler(PARENT_WIDTH, "5", float.class, Float::parseFloat);
+            addHandler(PARENT_HEIGHT, "5", float.class, Float::parseFloat);
             addHandler(LAYER, "0", int.class, Integer::parseInt);
 
-            addHandler(POS_X1, "0", int.class, p -> {
+            addHandler(POS_X1, "0", float.class, p -> {
                 if(p.endsWith("%")){
-                    var w = get(RenderableStyles.PARENT_WIDTH, int.class);
+                    var w = get(RenderableStyles.PARENT_WIDTH, float.class);
                     if(w == null){
-                        w = get(RenderableStyles.WIDTH, int.class);
+                        w = get(RenderableStyles.WIDTH, float.class);
                     }
                     return calc(p, 0, w);
                 }
-                return (int)Float.parseFloat(p);
+                return Float.parseFloat(p);
             });
-            addHandler(POS_Y1, "0", int.class, p -> {
+            addHandler(POS_Y1, "0", float.class, p -> {
                 if(p.endsWith("%")){
-                    var w = get(RenderableStyles.PARENT_HEIGHT, int.class);
+                    var w = get(RenderableStyles.PARENT_HEIGHT, float.class);
                     if(w == null){
-                        w = get(RenderableStyles.HEIGHT, int.class);
+                        w = get(RenderableStyles.HEIGHT, float.class);
                     }
                     return calc(p, 0, w);
                 }
-                return (int)Float.parseFloat(p);
+                return Float.parseFloat(p);
             });
         }
 
-        public int calc(String v, int d, int max){
+        public float calc(String v, float d, float max){
             v = v.replaceAll("%", "");
             if(v.equals("init")){
                 return d;
@@ -252,7 +275,7 @@ public abstract class Renderable implements Component, Drawable {
             }
 
             var one = max / 100.0;
-            return (int) (one * i);
+            return (float) (one * i);
         }
     }
 
