@@ -38,12 +38,12 @@ public class NodeContext {
     public HashMap<String, List<SetterInfo>> setters = new HashMap<>();
     public HashMap<String, List<Renderable>> last_wrappers = new HashMap<>();
     public final Optional<ViewController> viewController;
-    public NodeContext(Optional<ViewController> viewController, NodeProvider nodeProvider, String blueprintPath) throws IOException {
+    public NodeContext(Optional<ViewController> viewController, NodeProvider nodeProvider) throws IOException {
         this.viewController = viewController;
         this.nodeProvider = nodeProvider;
         load();
         this.config = new NodeEditorConfig();
-        this.config.setSettingsFile(blueprintPath);
+        this.config.setSettingsFile(nodeProvider.getBlueprintPath());
         this.context = new NodeEditorContext(config);
         this.render = new NodeRender(this);
 
@@ -58,7 +58,6 @@ public class NodeContext {
     public void init(){
 
         if(!init){
-            NodeEditor.setCurrentEditor(context);
             init = true;
         }
 
@@ -101,10 +100,10 @@ public class NodeContext {
     }
 
 
-    public Renderable startProcess(boolean debugShow, ViewScope scope){
+    public Renderable startProcess(boolean debugShow, ProcessService.ProcessData data, ViewScope scope){
 
         this.scope = scope;
-        var data = new ProcessService.ProcessData();
+//        var data = new ProcessService.ProcessData();
 
         var devRenderNodes =
                 nodes.stream().filter(p -> p.innerType == NodeType.DevRender)
@@ -131,7 +130,12 @@ public class NodeContext {
              ) {
             var ps = new ProcessService(node, render, data);
             var out = nodeType.process(node, ps);
-            view.addChild((Renderable)out.get("out"));
+            var r = (Renderable)out.get("out");
+            for (var rd: r.getStyle().data.entrySet()
+                 ) {
+                view.getStyle().data.put(rd.getKey(), rd.getValue());
+            }
+            view.addChild(r);
         }
 
         if(debugShow){

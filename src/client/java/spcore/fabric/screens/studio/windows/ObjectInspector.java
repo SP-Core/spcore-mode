@@ -6,9 +6,11 @@ import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImString;
+import spcore.appapi.helpers.PathHelper;
 import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.screens.studio.WindowType;
 import spcore.imgui.nodes.NodeTab;
+import spcore.imgui.nodes.providers.DebugProvider;
 
 public class ObjectInspector extends AbstractWindow{
 
@@ -48,7 +50,14 @@ public class ObjectInspector extends AbstractWindow{
                                     GuiNodesWindow.class,
                                     WindowType.GuiNodes);
 
-                            w.setData(GuiNodesWindow.VIEW, v);
+                            var pathViewJson = PathHelper.combine(getScreen().manifest.absolute, getScreen().manifest.dev.views, v.path);
+                            var pathBlueprintJson = PathHelper.combine(getScreen().manifest.absolute, getScreen().manifest.dev.views, v.blueprint);
+
+                            var provider = new DebugProvider(v.name, pathViewJson, pathBlueprintJson);
+
+
+                            w.setData(GuiNodesWindow.PROVIDER, provider);
+                            w.setData(GuiNodesWindow.VIEW_NAME, v.name);
                             getScreen().toggleWindow(w);
                         }
                         else{
@@ -89,7 +98,15 @@ public class ObjectInspector extends AbstractWindow{
                         GuiNodesWindow.class,
                         WindowType.GuiNodes);
 
-                w.setData(GuiNodesWindow.VIEW, v);
+                var pathViewJson = PathHelper.combine(getScreen().manifest.absolute, getScreen().manifest.dev.views, v.path);
+                var pathBlueprintJson = PathHelper.combine(getScreen().manifest.absolute, getScreen().manifest.dev.views, v.blueprint);
+
+                var provider = new DebugProvider(v.name, pathViewJson, pathBlueprintJson);
+
+
+                w.setData(GuiNodesWindow.PROVIDER, provider);
+                w.setData(GuiNodesWindow.VIEW_NAME, v.name);
+
                 getScreen().toggleWindow(w);
 
                 ImGui.closeCurrentPopup();

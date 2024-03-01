@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 public class StringValueInput extends AbstractValueInput {
 
-    private HashMap<PinId, ImString> values = new HashMap<>();
+    private final HashMap<PinId, ImString> values = new HashMap<>();
     @Override
     public void render(Node node, Pin pin) {
         ImString value;

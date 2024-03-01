@@ -43,7 +43,7 @@ public class MulIntMathNode extends AbstractNodeType {
             var2 = Integer.parseInt(node.getInputValue("var2"));
         }
 
-        outputs.put("value", (int)(var1 * var2));
+        outputs.put("value", var1 * var2);
         return outputs;
     }
 }

@@ -206,7 +206,7 @@ public abstract class Renderable implements Component, Drawable {
 
         public void setX(float left, float right) {
             float f = (float)this.positioner.marginLeft;
-            float g = (float)(right - this.renderable.getWidth() - this.positioner.marginRight);
+            float g = right - this.renderable.getWidth() - this.positioner.marginRight;
             int i = (int) MathHelper.lerp(this.positioner.relativeX, f, g);
 //            var x = i + left;
 //            var parent_w = this.renderable.style.get(RenderableStyles.PARENT_WIDTH, int.class);
@@ -215,7 +215,7 @@ public abstract class Renderable implements Component, Drawable {
 
         public void setY(float top, float bottom) {
             float f = (float)this.positioner.marginTop;
-            float g = (float)(bottom - this.renderable.getHeight() - this.positioner.marginBottom);
+            float g = bottom - this.renderable.getHeight() - this.positioner.marginBottom;
             int i = Math.round(MathHelper.lerp(this.positioner.relativeY, f, g));
             this.renderable.setY(Float.toString(i + top));
         }

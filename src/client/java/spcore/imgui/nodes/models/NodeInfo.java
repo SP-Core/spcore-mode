@@ -12,8 +12,8 @@ public class NodeInfo {
 
     public final List<PinInfo> inputs = new ArrayList<>();
     public final List<PinInfo> outputs = new ArrayList<>();
-    private int inputIndex = 0;
-    private int outputIndex = 0;
+    private final int inputIndex = 0;
+    private final int outputIndex = 0;
     public NodeInfo(NodeType nodeType) {
         this.nodeType = nodeType;
     }

@@ -9,7 +9,7 @@ import java.util.HashMap;
 public class CommandEngine {
 
     public final Terminal terminal;
-    private static HashMap<String, BaseCommand> _commands;
+    private static final HashMap<String, BaseCommand> _commands;
 
     static {
         _commands = new HashMap<>();

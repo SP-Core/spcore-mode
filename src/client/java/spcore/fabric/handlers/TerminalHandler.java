@@ -28,6 +28,8 @@ import spcore.api.helpers.SpCryptoLink;
 import spcore.fabric.screens.TerminalScreen;
 import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.sounds.SpCoreSound;
+import spcore.fabric.sounds.managers.SoundClient;
+import spcore.fabric.sounds.models.ConnectionInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +42,8 @@ public class TerminalHandler {
     public static final Identifier Id = Identifier.of(GlobalContext.MOD_ID, "init");
 
     public static SoundEvent Sound;
+
+
     public void invoke(PlayerEntity player, ItemStack itemStack, Hand hand, int currentPageIndex, List<String> pages){
 
 //        var ff = new PositionedSoundInstance(SoundEvent.of(Id), SoundCategory.MASTER, 1, 1, Random.create(11), player.getX(), player.getY(), player.getZ());
@@ -50,7 +54,7 @@ public class TerminalHandler {
 //        assert MinecraftClient.getInstance().player != null;
 //        SharedConstants.isDevelopment = true;
 //
-//        MinecraftClient.getInstance().player.playSound(SoundEvent.of(Id), 1, 1);
+        //MinecraftClient.getInstance().player.playSound(SoundEvent.of(Id), 1, 1);
 //        SharedConstants.isDevelopment = false;
         NbtCompound nbt = null;
         if(itemStack != null){

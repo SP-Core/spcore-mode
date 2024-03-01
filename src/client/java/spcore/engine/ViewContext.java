@@ -14,6 +14,8 @@ import spcore.engine.models.ViewsInfo;
 import spcore.fabric.screens.NotFoundViewScreen;
 import spcore.fabric.screens.TerminalScreen;
 import spcore.fabric.screens.WrapperedScreen;
+import spcore.fabric.screens.studio.InGameHubHandler;
+import spcore.fabric.screens.studio.InGameHudCoreContext;
 import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.screens.views.CommandMapScreen;
 import spcore.fabric.screens.views.ScriptExceptionScreen;
@@ -115,25 +117,21 @@ public class ViewContext {
 
     private void view(ViewController controller) throws ScriptException {
 
-        WrapperedScreen screen = null;
+        StudioView screen = null;
         if(app.dev != null && app.dev.views != null){
             var viewsPath = app.dev.views + "/views.json";
             var file = new File(PathHelper.combine(app.absolute, viewsPath));
             if(Files.exists(file.toPath())){
-                screen = new StudioView(this, app, controller.name, file);
+                screen = new StudioView(this, app, controller, file, false);
+                mc.setScreen(screen);
+                return;
             }
         }
 
-//        if(screen == null){
-//            var viewScreen = new ViewScreen(this, controller.name, controller.nodes, controller.links, controller.lastId);
-//            screen = viewScreen;
-//            var nc = viewScreen.nodeContext;
-//            jsRuntime.putMember("back_nodeContext", nc);
-//            jsRuntime.eval("module.exports.core.controllers[" + controller.index + "].initFunc(back_nodeContext)");
-//
-//        }
-
+        screen = new StudioView(this, app, controller, null, true);
         mc.setScreen(screen);
+
+
     }
 
     private void viewException(Exception e){
@@ -149,6 +147,9 @@ public class ViewContext {
                 .eval("getWrapper(module.exports.core.controllers["+ controllerId +"]" +
                         ".wrappers, \"" + id +"\")");
 
+        if(wrapperId.isNull()){
+            return -1;
+        }
         return wrapperId.asInt();
     }
 

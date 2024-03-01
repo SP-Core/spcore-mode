@@ -12,14 +12,11 @@ base {
 }
 
 repositories {
-	// Add repositories to retrieve artifacts from in here.
-	// You should only use this when depending on other mods because
-	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
-	// for more information about repositories.
-
+	mavenCentral()
+	maven { url = 'https://libraries.minecraft.net/' }
+	maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+	maven { url = 'https://repo.viaversion.com/' }
 }
-
 loom {
     splitEnvironmentSourceSets()
 
@@ -81,8 +78,9 @@ dependencies {
 
 	implementation "org.vineflower:vineflower:1.9.3"
 	implementation 'org.reflections:reflections:0.10.2'
-
 	implementation 'org.lwjgl:lwjgl-stb:3.1.2'
+
+	implementation 'javazoom:jlayer:1.0.1'
 	//java -jar vineflower-1.9.3.jar -dgs=1 "C:\Users\jackf\Documents\spcore-mode\.gradle\loom-cache\minecraftMaven\net\minecraft\minecraft-clientOnly-51c0cfe141\1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2\minecraft-clientOnly-51c0cfe141-1.20.1-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2.jar" "C:\Users\jackf\Desktop\myApp\minecraft"
 	// Uncomment the following line to enable the deprecated Fabric API modules.
 	// These are included in the Fabric API production distribution and allow you to update your mod to the latest modules at a later more convenient time.

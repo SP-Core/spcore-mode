@@ -71,7 +71,7 @@ public class AppResolverScreen extends Screen {
 
         adder.add(ButtonWidget.builder(Text.of("Отмена"), (button) -> {
             KnowApplicationManager.notTrust(info);
-            MinecraftClient.getInstance().setScreen((Screen) null);
+            MinecraftClient.getInstance().setScreen(null);
         }).width(204).build(), 2);
 
         gridWidget.refreshPositions();

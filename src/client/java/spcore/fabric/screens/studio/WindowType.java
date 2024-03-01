@@ -13,7 +13,7 @@ public enum WindowType {
     public final String name;
     public final WindowCategory category;
     public final WindowFactory nodeType;
-    private WindowType(String name, WindowCategory category, WindowFactory nodeType){
+    WindowType(String name, WindowCategory category, WindowFactory nodeType){
         this.name = name;
         this.category = category;
         this.nodeType = nodeType;

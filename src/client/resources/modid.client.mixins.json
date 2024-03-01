@@ -6,8 +6,10 @@
     "BookEditScreenMixin",
     "BookScreenMixin",
     "ClientPlayerInteractionManagerMixin",
+    "InGameHudMixin",
     "MinecraftClientMixin",
-    "SoundManagerMixin"
+    "SoundManagerMixin",
+    "TextureManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

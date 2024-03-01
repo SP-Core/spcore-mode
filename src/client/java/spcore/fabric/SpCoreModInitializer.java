@@ -32,6 +32,8 @@ import spcore.fabric.handlers.TerminalHandler;
 import spcore.fabric.screens.AppResolverScreen;
 import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.screens.studio.windows.GuiNodesWindow;
+import spcore.fabric.sounds.managers.SoundClient;
+import spcore.fabric.sounds.models.ConnectionInfo;
 
 import javax.script.ScriptException;
 import java.io.IOException;
@@ -41,6 +43,9 @@ import java.nio.file.Path;
 public class SpCoreModInitializer implements ClientModInitializer {
 
 	private static Screen showCurrentScreen;
+
+	private int t = 0;
+	private static SoundClient client;
 	@Override
 	public void onInitializeClient() {
 		GlobalContext.LOGGER.info("CLIENT INIT");
@@ -101,26 +106,40 @@ public class SpCoreModInitializer implements ClientModInitializer {
 		});
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
+
 			var screen = client.currentScreen;
 			if(screen == null){
 				return;
 			}
 
 			if(screen instanceof StudioView view){
+				t++;
+				if(t >= 40){
+					t = 0;
+					boolean v = false;
+					for (var nc: GuiNodesWindow.getContexts()
+					) {
+						if(nc.init){
+							if(nc.save()){
+								v = true;
 
-				for (var nc: GuiNodesWindow.getContexts()
-					 ) {
-					if(nc.init){
-						if(nc.save()){
-							view.restart();
+							}
 						}
 					}
-				}
 
+					if(v){
+						view.restart();
+					}
+				}
 			}
+
 		});
 
 
+
+
+
 	}
+
 
 }

@@ -55,17 +55,17 @@ public class NodeRender {
     private final HashMap<NodeId, Float> m_NodeTouchTime = new HashMap<>();
     private final Float m_TouchTime = 1.0f;
 
-    private ImLong contextNodeId = new ImLong(0);
-    private ImLong contextLinkId = new ImLong(0);
-    private ImLong contextPinId = new ImLong(0);
+    private final ImLong contextNodeId = new ImLong(0);
+    private final ImLong contextLinkId = new ImLong(0);
+    private final ImLong contextPinId = new ImLong(0);
 
     private boolean createNewNode = false;
     private Pin newNodeLinkPin;
     public Pin newLinkPin;
-    private float leftPaneWidth = 400;
-    private float rightPaneWidth = 800;
+    private final float leftPaneWidth = 400;
+    private final float rightPaneWidth = 800;
 
-    private BlueprintNodeRender nodeRender = new BlueprintNodeRender();
+    private final BlueprintNodeRender nodeRender = new BlueprintNodeRender();
 
     private final List<NodeTab> tabs = new ArrayList<>();
     public NodeRender(NodeContext context) {
@@ -365,10 +365,7 @@ public class NodeRender {
 
     public boolean CanCreateLink(Pin a, Pin b)
     {
-        if (a == null || b == null || a == b || a.innerPin.kind == b.innerPin.kind || a.type != b.type || a.nodeId == b.nodeId)
-            return false;
-
-        return true;
+        return a != null && b != null && a != b && a.innerPin.kind != b.innerPin.kind && a.type == b.type && a.nodeId != b.nodeId;
     }
 
     Color GetIconColor(PinType type)
@@ -425,7 +422,7 @@ public class NodeRender {
 
 
         WidgetsUtils.Icon(new ImVec2(24.0f, 24.0f), iconType, connected, color.getRGB(), ImColor.floatToColor(32, 32, 32, alpha));
-    };
+    }
 
     public boolean IsPinLinked(PinId id)
     {

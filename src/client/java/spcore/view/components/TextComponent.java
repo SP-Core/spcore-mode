@@ -44,7 +44,7 @@ public class TextComponent extends ViewComponent {
         var m = context.getMatrices();
         var s = (1 / scale);
         m.scale(scale, scale, scale);
-        float i = this.getX() + Math.round(this.style.get(TextStyles.ALIGN, float.class) * (float)(this.getWidth() - (textRenderer.getWidth(text) * scale)));
+        float i = this.getX() + Math.round(this.style.get(TextStyles.ALIGN, float.class) * (this.getWidth() - (textRenderer.getWidth(text) * scale)));
         float j = this.getY() + (this.getHeight() - (textRenderer.fontHeight * scale)) / 2;
         context.drawTextWithShadow(textRenderer, text,  (int)(i * s), (int)(j * s), style.get(TextStyles.COLOR, int.class));
         m.scale((1 / scale), (1 / scale), (1 / scale));

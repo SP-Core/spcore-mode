@@ -13,7 +13,7 @@ public enum NodeCategory {
     Variables("variables"),
     TypeScript("type-script"),;
     public final String value;
-    private NodeCategory(String value){
+    NodeCategory(String value){
         this.value = value;
     }
 

@@ -4,5 +4,5 @@ import okhttp3.Call;
 import okhttp3.Response;
 
 public interface ResponseDelegate {
-    public void invoke(Call call, Response response);
+    void invoke(Call call, Response response);
 }

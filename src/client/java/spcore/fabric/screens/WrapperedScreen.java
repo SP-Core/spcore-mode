@@ -26,15 +26,22 @@ public class WrapperedScreen extends Screen {
              ) {
 
             var index = viewContext.getWrapperIndex(controllerId, wrap.getKey());
+            if(index == -1){
+                continue;
+            }
             this.wrappers.put(wrap.getKey(), index);
         }
     }
 
-    public void renderWrappers(int controllerId) throws ScriptException {
+    public void renderWrappers(RenderInfo renderInfo, int controllerId) throws ScriptException {
         for (var wrap: linksWrappers.entrySet()
              ) {
+            if(!wrappers.containsKey(wrap.getKey())){
+                continue;
+            }
             for (var c: wrap.getValue()
                  ) {
+                viewContext.jsRuntime.putMember("Render", renderInfo);
                 viewContext.startWrapper(controllerId, wrappers.get(wrap.getKey()), c);
             }
         }
@@ -44,6 +51,21 @@ public class WrapperedScreen extends Screen {
         return viewContext;
     }
 
+    public static class RenderInfo{
+        private final float mouseX;
+        private final float mouseY;
+        public RenderInfo(float mouseX, float mouseY){
+            this.mouseX = mouseX;
+            this.mouseY = mouseY;
+        }
+        public float mousePosX(){
+            return mouseX;
+        }
+
+        public float mousePosY(){
+            return mouseY;
+        }
+    }
 
 
 }

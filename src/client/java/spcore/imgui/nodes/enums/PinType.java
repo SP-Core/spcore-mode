@@ -17,7 +17,7 @@ public enum PinType {
     TypeScriptSetter(13),
     Parameter(14);
     public final int value;
-    private PinType(int value){
+    PinType(int value){
         this.value = value;
     }
 }

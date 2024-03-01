@@ -2,6 +2,7 @@ package spcore.fabric.resources;
 
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceFactory;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.util.Identifier;
 import spcore.fabric.handlers.TerminalHandler;
@@ -39,5 +40,9 @@ public class TestResourceProvider implements ResourceProvider {
                 return null;
             }));
         };
+    }
+
+    public static ResourceManager createManager(ResourceManager manager){
+        return new SpCoreResourceManager(manager);
     }
 }

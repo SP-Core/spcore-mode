@@ -17,9 +17,11 @@ public class DebugProvider implements NodeProvider {
     private final String viewName;
 
     private final String path;
-    public DebugProvider(String viewName, String path) {
+    private final String blueprintPath;
+    public DebugProvider(String viewName, String path, String blueprintPath) {
         this.viewName = viewName;
         this.path = path;
+        this.blueprintPath = blueprintPath;
     }
 
     @Override
@@ -78,5 +80,10 @@ public class DebugProvider implements NodeProvider {
         Files.writeString(hashFile.toPath(), Integer.toString(json.hashCode()));
 
         return vf;
+    }
+
+    @Override
+    public String getBlueprintPath() {
+        return blueprintPath;
     }
 }

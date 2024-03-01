@@ -41,4 +41,9 @@ public class ProductionProvider implements NodeProvider {
         f.lastId = lastId;
         return f;
     }
+
+    @Override
+    public String getBlueprintPath() {
+        return "empty.json";
+    }
 }

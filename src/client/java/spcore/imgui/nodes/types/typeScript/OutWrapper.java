@@ -36,7 +36,7 @@ public class OutWrapper extends AbstractNodeType {
 
         String id = null;
         if(node.containsInputValue("id")){
-            id = (String) node.getInputValue("id");
+            id = node.getInputValue("id");
         }
 
         if(id != null && !id.equals(""))

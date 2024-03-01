@@ -28,6 +28,7 @@ public class SoundManagerMixin {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     public void findSounds(ResourceFactory resourceFactory, CallbackInfo ci) {
+
         this.resourceFactory = TestResourceProvider.createFactory(resourceFactory);
     }
 }

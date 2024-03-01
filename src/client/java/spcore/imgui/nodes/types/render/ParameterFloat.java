@@ -19,6 +19,7 @@ public class ParameterFloat extends AbstractNodeType {
         var node = new NodeInfo(nt);
         node.addInput(new PinInfo("id", PinType.String));
         node.addInput(new PinInfo("value", PinType.Float));
+        node.addInput(new PinInfo("input", PinType.Parameter));
         node.addOutput(new PinInfo("value", PinType.Float));
         node.addOutput(new PinInfo("output", PinType.Parameter));
         return node;
@@ -27,15 +28,33 @@ public class ParameterFloat extends AbstractNodeType {
     @Override
     protected HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
+
         var v = new ParameterValue<Float>();
-
-        if(inputs.contains("value")){
-            v.value = (float)inputs.process("value");
+        if(!node.containsInputValue("id")){
+            outputs.put("value", 0.0f);
+            outputs.put("output", null);
+            return outputs;
         }
-        else if(node.containsInputValue("value")){
-            v.value = Float.parseFloat(node.getInputValue("value"));
+        var id = node.getInputValue("id");
+        v.id = id;
+        if(inputs.contains("input")){
+            var inputMap = (HashMap<String, Object>)inputs.process("input");
+
+            v.value = (Float)inputMap.get(id);
+        }
+        else{
+            if(inputs.contains("value")){
+                v.value = (float)inputs.process("value");
+            }
+            else if(node.containsInputValue("value")){
+                v.value = Float.parseFloat(node.getInputValue("value"));
+            }
         }
 
+
+
+
+        outputs.put("value", v.value);
         outputs.put("output", v);
         return outputs;
     }

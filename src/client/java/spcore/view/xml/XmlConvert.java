@@ -29,14 +29,10 @@ public class XmlConvert {
     private static Renderable buildNode(Node element) throws Exception {
         var type = element.getNodeName();
         Renderable main;
-        switch (type){
-            case "view":{
-                main = new ViewComponent();
-                break;
-            }
-            default:{
-                throw new Exception("NotFound Node type " + type);
-            }
+        if ("view".equals(type)) {
+            main = new ViewComponent();
+        } else {
+            throw new Exception("NotFound Node type " + type);
         }
 
         for(var i = 0; i < element.getAttributes().getLength(); i++){

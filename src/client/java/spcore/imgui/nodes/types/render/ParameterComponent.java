@@ -19,6 +19,7 @@ public class ParameterComponent extends AbstractNodeType {
         var node = new NodeInfo(nt);
         node.addInput(new PinInfo("id", PinType.String));
         node.addInput(new PinInfo("component", PinType.Component));
+        node.addInput(new PinInfo("input", PinType.Parameter));
         node.addOutput(new PinInfo("component", PinType.Component));
         node.addOutput(new PinInfo("output", PinType.Parameter));
         return node;

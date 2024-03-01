@@ -47,7 +47,7 @@ public class TreeHandler {
         TreeTransaction transaction = null;
 
         if(block instanceof SaplingBlock saplingBlock){
-            stage = (Integer)blockState.get(STAGE);
+            stage = blockState.get(STAGE);
             transaction = new TreeTransaction(saplingBlock.getTranslationKey(), blockPos);
             MinecraftClient mc = MinecraftClient.getInstance();
             if(ltransaction == null || !Objects.equals(ltransaction.toMessage(), transaction.toMessage())){

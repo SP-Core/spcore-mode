@@ -47,6 +47,8 @@ public enum NodeType {
     DevRender("Dev Render", NodeCategory.Render, new DevRenderNodeType()),
     ParameterComponent("Parameter Component", NodeCategory.Render, new ParameterComponent()),
     ParameterFloat("Parameter Float", NodeCategory.Render, new ParameterFloat()),
+    ParameterVector2("Parameter Vector2", NodeCategory.Render, new ParameterVector2()),
+    ParameterVector4("Parameter Vector4", NodeCategory.Render, new ParameterVector4()),
 
     Color("Color", NodeCategory.Literal, new ColorNodeType()),
     Int("Int", NodeCategory.Literal, new IntNodeType()),
@@ -58,6 +60,7 @@ public enum NodeType {
     Repeat("Repeat", NodeCategory.View, new RepeatNodeType()),
     TextView("TextView", NodeCategory.View, new TextViewNodeType()),
     View("View", NodeCategory.View, new ViewNodeType()),
+    Image("Image view", NodeCategory.View, new ImageNodeType()),
 
     Guide("Guide", NodeCategory.Guide, new Guide()),
     GuideLink("Guide Link", NodeCategory.Guide, new GuideLink()),
@@ -75,7 +78,7 @@ public enum NodeType {
     public final NodeCategory category;
     public final AbstractNodeType nodeType;
     private final static HashMap<NodeType, NodeInfo> nodeInfos = new HashMap<>();
-    private NodeType(String name, NodeCategory category, AbstractNodeType nodeType){
+    NodeType(String name, NodeCategory category, AbstractNodeType nodeType){
         this.name = name;
         this.category = category;
         this.nodeType = nodeType;

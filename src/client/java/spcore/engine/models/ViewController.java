@@ -11,5 +11,6 @@ public class ViewController {
     public List<Link> links;
     public int lastId;
 
+    public boolean gameHub = false;
     public transient int index;
 }

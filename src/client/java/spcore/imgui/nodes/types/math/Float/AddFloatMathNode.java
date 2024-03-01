@@ -46,7 +46,7 @@ public class AddFloatMathNode extends AbstractNodeType {
             var2 = Float.parseFloat(node.getInputValue("var2"));
         }
 
-        outputs.put("value", (float)(var1 + var2));
+        outputs.put("value", var1 + var2);
         return outputs;
     }
 }

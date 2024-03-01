@@ -55,7 +55,7 @@ import java.util.*;
 public class TerminalScreen
         extends Screen {
     private int tickCounter;
-    private final SelectionManager currentPageSelectionManager = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
+    private final SelectionManager currentPageSelectionManager = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight(string, 114) <= 128);
     private long lastClickTime;
     private int lastClickIndex = -1;
     @Nullable
@@ -139,7 +139,7 @@ public class TerminalScreen
         if(showMainSpace){
             return false;
         }
-        if (SharedConstants.isValidChar((char)chr)) {
+        if (SharedConstants.isValidChar(chr)) {
             this.currentPageSelectionManager.insert(Character.toString(chr));
             this.invalidatePageContent();
             return true;
@@ -263,7 +263,7 @@ public class TerminalScreen
             int i = (this.width - 192) / 2;
             int j = 2;
             context.drawTexture(TERMINAL_TEXTURE, i, 2, 0, 0, 192, 192);
-            int n = this.textRenderer.getWidth((StringVisitable)this.title);
+            int n = this.textRenderer.getWidth(this.title);
             context.drawText(this.textRenderer, this.title, i - n + 192 - 44, 18, 14277081, false);
             TerminalScreen.PageContent pageContent = this.getPageContent();
             for (TerminalScreen.Line line : pageContent.lines) {
@@ -527,7 +527,7 @@ public class TerminalScreen
             this.content = content;
             this.x = x;
             this.y = y;
-            this.text = Text.literal((String)content).setStyle(style);
+            this.text = Text.literal(content).setStyle(style);
         }
     }
 

@@ -8,6 +8,7 @@ import imgui.extension.nodeditor.NodeEditor;
 import imgui.flag.*;
 import imgui.internal.flag.ImGuiDockNodeFlags;
 import imgui.type.ImBoolean;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.Screen;
@@ -17,6 +18,7 @@ import spcore.appapi.helpers.PathHelper;
 import spcore.appapi.models.SpCoreInfo;
 import spcore.engine.TimeApi;
 import spcore.engine.ViewContext;
+import spcore.engine.models.ViewController;
 import spcore.engine.models.ViewsInfo;
 import spcore.fabric.screens.WrapperedScreen;
 import spcore.fabric.screens.studio.windows.AbstractWindow;
@@ -29,6 +31,7 @@ import spcore.imgui.nodes.models.Node;
 import spcore.imgui.nodes.models.ViewScope;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.imgui.nodes.providers.DebugProvider;
+import spcore.imgui.nodes.providers.ProductionProvider;
 import spcore.js.JsRuntime;
 import spcore.view.components.TextComponent;
 import spcore.view.render.RenderEngine;
@@ -46,37 +49,57 @@ public class StudioView extends WrapperedScreen {
     public final HashMap<String, AbstractWindow> windows = new HashMap<>();
     public final ViewsInfo viewsSettings;
     public final SpCoreInfo manifest;
+    public final ViewController controller;
     public File viewsFile;
     public boolean debugShow = true;
-    private ImBoolean showMetrics = new ImBoolean(false);
-    public StudioView(ViewContext viewContext, SpCoreInfo manifest, String currentView, File viewsFile) {
+    public boolean publish = false;
+    private final ImBoolean showMetrics = new ImBoolean(false);
+    public StudioView(ViewContext viewContext, SpCoreInfo manifest, ViewController controller, File viewsFile, boolean publish) {
         super(viewContext, Text.empty());
+        this.controller = controller;
+        this.publish = publish;
         GuiNodesWindow.destroy();
         this.manifest = manifest;
         this.viewsFile = viewsFile;
-        var mapper = new ObjectMapper(new Gson());
-        String contentViews = null;
-        try {
-            contentViews = Files.readString(viewsFile.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        viewsSettings = mapper.readValue(contentViews, ViewsInfo.class);
-        var view = viewsSettings.views
-                .stream()
-                .filter(p -> p.name.equals(currentView))
-                .findFirst()
-                .get();
-
         var w = createWindow(
                 GuiNodesWindow.class,
                 WindowType.GuiNodes);
 
-        w.setData(GuiNodesWindow.VIEW, view);
+        if(publish){
+            var provider = new ProductionProvider(controller.name, controller.nodes, controller.links, controller.lastId);
+            viewsSettings = null;
+            w.setData(GuiNodesWindow.PROVIDER, provider);
+            debugShow = false;
+        }
+        else{
+            var mapper = new ObjectMapper(new Gson());
+            String contentViews = null;
+            try {
+                contentViews = Files.readString(viewsFile.toPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            viewsSettings = mapper.readValue(contentViews, ViewsInfo.class);
+            var view = viewsSettings.views
+                    .stream()
+                    .filter(p -> p.name.equals(controller.name))
+                    .findFirst()
+                    .get();
+
+            var pathViewJson = PathHelper.combine(manifest.absolute, manifest.dev.views, view.path);
+            var pathBlueprintJson = PathHelper.combine(manifest.absolute, manifest.dev.views, view.blueprint);
+
+            var provider = new DebugProvider(view.name, pathViewJson, pathBlueprintJson);
+
+            w.setData(GuiNodesWindow.PROVIDER, provider);
+        }
+
+        w.setData(GuiNodesWindow.VIEW_NAME, controller.name);
         toggleWindow(w);
-        GuiNodesWindow.setCurrentNode(view.name);
+        GuiNodesWindow.setCurrentNode(controller.name);
     }
+
 
     public void removeView(String name){
         var m = viewsSettings.views
@@ -107,7 +130,7 @@ public class StudioView extends WrapperedScreen {
         var viewFile = PathHelper.combineFile(folderFile.getAbsolutePath(), name + ".view.json");
         if(!viewFile.exists()){
             try {
-                Files.writeString(viewFile.toPath(), "{\"nodes\":[], \"links\": [], \"lastId\":0}", StandardCharsets.UTF_8);
+                Files.writeString(viewFile.toPath(), "{\"nodes\":[], \"links\": [], \"lastId\":1}", StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException();
             }
@@ -131,6 +154,9 @@ public class StudioView extends WrapperedScreen {
 
     @Override
     protected void init(){
+        if(this.debugShow){
+            InGameHudCoreContext.handler = null;
+        }
         super.init();
 
         for (var w: windows.entrySet()
@@ -143,14 +169,13 @@ public class StudioView extends WrapperedScreen {
         super.clearAndInit();
     }
 
-    @Override
-    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+    public void mainRender(DrawContext context, int mouseX, int mouseY, float delta){
         TimeApi.start();
 
         var cc = GuiNodesWindow.getCurrentContext();
         if(cc != null && cc.viewController.isPresent()){
             try {
-                super.renderWrappers(cc.viewController.get().index);
+                super.renderWrappers(new RenderInfo(mouseX, mouseY), cc.viewController.get().index);
             } catch (ScriptException e) {
                 GlobalContext.LOGGER.error(e.getMessage());
             }
@@ -159,7 +184,22 @@ public class StudioView extends WrapperedScreen {
 
         super.render(context, mouseX, mouseY, delta);
         TimeApi.end();
+    }
+    @Override
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        if(controller.gameHub && !debugShow){
+            InGameHudCoreContext.screen = this;
+            InGameHudCoreContext.handler = (c, d) -> {
+                InGameHudCoreContext.screen.mainRender(c, 0, 0, d);
+            };
+            MinecraftClient.getInstance().setScreen(null);
+        }
 
+        mainRender(context, mouseX, mouseY, delta);
+
+        if(publish){
+            return;
+        }
         ImGuiImpl.draw(io -> {
             if(showMetrics.get()){
                 ImGui.showMetricsWindow(showMetrics);
@@ -260,7 +300,11 @@ public class StudioView extends WrapperedScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+
         if(keyCode == 258 && scanCode == 15 && modifiers == 0){
+            if(publish){
+                return false;
+            }
             this.debugShow = !debugShow;
             this.clearAndInit();
         }

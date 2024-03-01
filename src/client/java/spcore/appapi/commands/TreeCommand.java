@@ -36,14 +36,14 @@ public class TreeCommand extends BaseCommand{
             builder.append("\n");
             builder.append("multyclick: ").append(p.multiclickLevel).append("lvl ").append(p.multiclickLevelPrice).append("t");
             builder.append("\n");
-            builder.append("limit: ").append(p.energyLimitLevel).append("lvl ").append(p.energyLimitPrice).append("t");;
+            builder.append("limit: ").append(p.energyLimitLevel).append("lvl ").append(p.energyLimitPrice).append("t");
             builder.append("\n");
             builder.append("speed: ").append(p.rechangingSpeedLevel).append("lvl ");
             if(p.rechangingSpeedPrice == -1){
                 builder.append("max");
             }
             else{
-                builder.append(p.rechangingSpeedPrice).append("t");;
+                builder.append(p.rechangingSpeedPrice).append("t");
             }
             builder.append("\n");
             builder.append("Boosts:");

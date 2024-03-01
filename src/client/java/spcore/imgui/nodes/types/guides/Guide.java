@@ -58,13 +58,13 @@ public class Guide extends AbstractNodeType {
         if(horizontal){
             view.setWidth(inputs.render.context.scope.width);
             view.setHeight(1);
-            view.setY(Float.toString(value) + "%");
+            view.setY(value + "%");
             inputs.data.horizontals.put(id, view.getY());
         }
         else{
             view.setHeight(inputs.render.context.scope.height);
             view.setWidth(1);
-            view.setX(Float.toString(value) + "%");
+            view.setX(value + "%");
             inputs.data.verticals.put(id, view.getX());
         }
 

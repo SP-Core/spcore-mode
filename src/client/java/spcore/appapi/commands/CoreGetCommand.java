@@ -139,7 +139,6 @@ public class CoreGetCommand extends BaseCommand{
                 manager.selectAll();
                 manager.delete(-1);
                 manager.insert("\nПроизошла непредвиденная ошибка\n");
-                return;
             }
 
         });

@@ -51,7 +51,7 @@ public class ScriptExceptionScreen extends Screen {
         gridWidget.getMainPositioner().margin(4, 4, 4, 0);
         GridWidget.Adder adder = gridWidget.createAdder(2);
         adder.add(ButtonWidget.builder(Text.of("Закрыть"), (button) -> {
-            MinecraftClient.getInstance().setScreen((Screen) null);
+            MinecraftClient.getInstance().setScreen(null);
         }).width(204).build(), 2, gridWidget.copyPositioner().marginTop(50));
 
         gridWidget.refreshPositions();

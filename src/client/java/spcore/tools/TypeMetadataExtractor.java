@@ -24,7 +24,7 @@ import java.util.Set;
 
 public class TypeMetadataExtractor {
 
-    private static List<String> blackList = new ArrayList<>();
+    private static final List<String> blackList = new ArrayList<>();
     public static void main(String[] args) {
 
         blackList.add("net.minecraft.entity.mob.MobEntity");
@@ -251,11 +251,10 @@ public class TypeMetadataExtractor {
     }
 
     private static String CreateField(Field field, String mod){
-        var interfaceBuilder = new StringBuilder();
-        interfaceBuilder.append(mod);
-        interfaceBuilder.append(" ");
-        interfaceBuilder.append(field.getName()).append(": ").append(getTypeName(field.getType().getName(), field.getType().getSimpleName())).append(";").append("\n");
-        return interfaceBuilder.toString();
+        String interfaceBuilder = mod +
+                " " +
+                field.getName() + ": " + getTypeName(field.getType().getName(), field.getType().getSimpleName()) + ";" + "\n";
+        return interfaceBuilder;
     }
 
     private static <T extends Enum<T>> String generateTypeScriptEnum(Class<T> type) {

@@ -9,9 +9,9 @@ import spcore.imgui.nodes.models.NodeId;
 import spcore.imgui.nodes.models.PinId;
 
 public class BlueprintNodeBuilder {
-    private int HeaderTextureId;
-    private int HeaderTextureWidth;
-    private int HeaderTextureHeight;
+    private final int HeaderTextureId;
+    private final int HeaderTextureWidth;
+    private final int HeaderTextureHeight;
     private NodeId CurrentNodeId;
     private Stage CurrentStage;
 //    private int HeaderColor;
@@ -270,5 +270,5 @@ public class BlueprintNodeBuilder {
         Output,
         Middle,
         End
-    };
+    }
 }

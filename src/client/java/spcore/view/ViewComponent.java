@@ -95,7 +95,7 @@ public class ViewComponent extends Renderable implements Drawable {
         BufferBuilder vertexConsumer = (BufferBuilder)ctx.getVertexConsumers().getBuffer(RenderLayer.getGui());
         for (var point: points
              ) {
-            vertexConsumer.vertex(matrix4f, (float)point.x, (float)point.y, 0).color(g, h, j, f).next();
+            vertexConsumer.vertex(matrix4f, point.x, point.y, 0).color(g, h, j, f).next();
         }
         ctx.draw();
     }
@@ -188,7 +188,7 @@ public class ViewComponent extends Renderable implements Drawable {
             int g;
             int b;
             if (local.startsWith("#")) {
-                local = local.substring(1, local.length());
+                local = local.substring(1);
             }
             int len = local.length();
 

@@ -27,8 +27,8 @@ public class ScreenNodeType extends AbstractNodeType {
     @Override
     public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         var outputs = new HashMap<String, Object>();
-        outputs.put("width", (float)inputs.render.context.scope.width);
-        outputs.put("height", (float)inputs.render.context.scope.height);
+        outputs.put("width", inputs.render.context.scope.width);
+        outputs.put("height", inputs.render.context.scope.height);
 
         return outputs;
     }

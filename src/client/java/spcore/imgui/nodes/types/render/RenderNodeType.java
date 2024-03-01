@@ -4,10 +4,7 @@ import imgui.ImColor;
 import spcore.imgui.nodes.NodeContext;
 import spcore.imgui.nodes.enums.NodeType;
 import spcore.imgui.nodes.enums.PinType;
-import spcore.imgui.nodes.models.Node;
-import spcore.imgui.nodes.models.NodeInfo;
-import spcore.imgui.nodes.models.Pin;
-import spcore.imgui.nodes.models.PinInfo;
+import spcore.imgui.nodes.models.*;
 import spcore.imgui.nodes.processor.ProcessService;
 import spcore.imgui.nodes.types.AbstractNodeType;
 import spcore.view.ViewComponent;
@@ -30,11 +27,14 @@ public class RenderNodeType extends AbstractNodeType {
     public HashMap<String, Object> internalProcess(Node node, ProcessService inputs) {
         HashMap<String, Object> outputs = new HashMap<>();
         var input = inputs.process("component");
+        Renderable component;
         if(input == null){
-            outputs.put("out", new ViewComponent());
-            return outputs;
+            component = new ViewComponent();
         }
-        var component = (Renderable)input;
+        else{
+            component = (Renderable)input;
+        }
+
 
         Object layerValue = inputs.process("layer");
         String layer;
@@ -51,6 +51,17 @@ public class RenderNodeType extends AbstractNodeType {
         }
 
         component.getStyle().styles.put(Renderable.RenderableStyles.LAYER, layer);
+
+        if(inputs.contains("outputs")){
+            for (var p: inputs.processes("outputs", ParameterValue.class)
+                 ) {
+                if(p == null)
+                    continue;
+
+                component.getStyle().data.put(p.id, p.value);
+            }
+        }
+
         outputs.put("out", component);
         return outputs;
     }
