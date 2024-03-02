@@ -7,12 +7,14 @@ import spcore.spnet.packets.inputs.AbstractInputPacket;
 import spcore.spnet.packets.inputs.InputPacketType;
 import spcore.spnet.packets.inputs.InputPacketsMap;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class SpNetInputThread extends Thread{
     private final SpNetConnectionClient inputs;
-    public final BlockingQueue<AbstractInputPacket> inputPackets = new LinkedBlockingQueue<>();
+    public final Queue<AbstractInputPacket> inputPackets = new LinkedList<>();
 
     public SpNetInputThread(SpNetConnectionClient inputs) {
         this.inputs = inputs;

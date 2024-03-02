@@ -72,7 +72,7 @@ public class CoreGetCommand extends BaseCommand{
                 return;
             }
 
-
+ 
             try {
                 assert r.body() != null;
                 var inputStream = r.body().byteStream();

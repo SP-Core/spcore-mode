@@ -1,6 +1,7 @@
 package spcore.fabric;
 
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -29,11 +30,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import spcore.fabric.eventHandlers.TreeHandler;
 import spcore.fabric.handlers.TerminalHandler;
+import spcore.fabric.handlers.WrittenBookHandler;
 import spcore.fabric.screens.AppResolverScreen;
 import spcore.fabric.screens.studio.StudioView;
 import spcore.fabric.screens.studio.windows.GuiNodesWindow;
 import spcore.fabric.sounds.managers.SoundClient;
 import spcore.fabric.sounds.models.ConnectionInfo;
+import spcore.spnet.SpNetClient;
 
 import javax.script.ScriptException;
 import java.io.IOException;
@@ -50,8 +53,8 @@ public class SpCoreModInitializer implements ClientModInitializer {
 	public void onInitializeClient() {
 		GlobalContext.LOGGER.info("CLIENT INIT");
 		SharedConstants.isDevelopment = true;
-		TerminalHandler.Sound = Registry.register(Registries.SOUND_EVENT, TerminalHandler.Id, SoundEvent.of(TerminalHandler.Id));
 		//UseBlockCallback.EVENT.register(TreeHandler::Invoke);
+		UseEntityCallback.EVENT.register(WrittenBookHandler::Invoke);
 		UseBlockCallback.EVENT.register(ShopCardHandler::Invoke);
 		KnowApplicationManager.addResolver(p -> {
 			if(AppResolverScreen.CurrentAppHash == p.hashCode() && AppResolverScreen.Resolve){
@@ -135,8 +138,11 @@ public class SpCoreModInitializer implements ClientModInitializer {
 
 		});
 
+		ClientTickEvents.END_CLIENT_TICK.register(p -> {
+			WrittenBookHandler.handle(false);
+		});
 
-
+		SpNetClient.registration();
 
 
 	}

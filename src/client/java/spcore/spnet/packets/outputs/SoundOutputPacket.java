@@ -11,7 +11,7 @@ public class SoundOutputPacket extends AbstractOutputPacket{
 
     public final SoundPacketType soundPacketType;
     public final ResourceId id;
-    protected SoundOutputPacket(SoundPacketType soundPacketType, ResourceId id) {
+    public SoundOutputPacket(SoundPacketType soundPacketType, ResourceId id) {
         super(OutputPacketType.Sound);
         this.soundPacketType = soundPacketType;
         this.id = id;
@@ -19,8 +19,8 @@ public class SoundOutputPacket extends AbstractOutputPacket{
 
     @Override
     protected void PacketWrite(DataOutputStream writer) throws IOException {
-        writer.writeInt(soundPacketType.value);
-        writer.writeInt(id.Value);
+        writer.writeInt(s(soundPacketType.value));
+        writer.writeInt(s(id.Value));
     }
 
     @Override

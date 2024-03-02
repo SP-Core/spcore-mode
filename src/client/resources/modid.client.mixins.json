@@ -5,13 +5,14 @@
   "client": [
     "BookEditScreenMixin",
     "BookScreenMixin",
-    "ClientPlayerInteractionManagerMixin",
+    "ClientWorldMixin",
     "InGameHudMixin",
+    "IntegratedServerMixin",
     "MinecraftClientMixin",
     "SoundManagerMixin",
     "TextureManagerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-	}
+  }
 }

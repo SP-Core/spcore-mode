@@ -39,10 +39,6 @@ import java.util.concurrent.TimeUnit;
 
 public class TerminalHandler {
 
-    public static final Identifier Id = Identifier.of(GlobalContext.MOD_ID, "init");
-
-    public static SoundEvent Sound;
-
 
     public void invoke(PlayerEntity player, ItemStack itemStack, Hand hand, int currentPageIndex, List<String> pages){
 

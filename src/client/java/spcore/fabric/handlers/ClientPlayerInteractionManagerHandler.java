@@ -15,10 +15,6 @@ public class ClientPlayerInteractionManagerHandler {
         GlobalContext.LOGGER.info(syncId + " " + slotId + " " + button + " " + actionType + " " +player.currentScreenHandler.getClass());
 
         assert MinecraftClient.getInstance().player != null;
-        SharedConstants.isDevelopment = true;
 
-
-        MinecraftClient.getInstance().player.playSound(TerminalHandler.Sound, 1, 1);
-        SharedConstants.isDevelopment = false;
     }
 }

@@ -24,6 +24,7 @@ public class CommandEngine {
         _commands.put("exe", new ExecuteCommand());
         _commands.put("up", new UpCommand());
         _commands.put("coreget", new CoreGetCommand());
+        _commands.put("sound", new SoundCommand());
     }
 
     public CommandEngine(Terminal terminal) {

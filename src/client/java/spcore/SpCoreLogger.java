@@ -389,6 +389,9 @@ public class SpCoreLogger implements Logger {
         if(!LoggingChat){
             return;
         }
+//        MinecraftClient.getInstance()
+//                .inGameHud
+//                .getChatHud().clear(false);
         MinecraftClient.getInstance()
                 .inGameHud
                 .getChatHud()

@@ -30,9 +30,8 @@ public class SpNetOutputThread extends Thread{
         try {
             while (inputs.connect){
                 var packet = outputPackets.take();
-                GlobalContext.LOGGER.info("Отправка пакета");
                 packet.Write(inputs.getOutputStream());
-                GlobalContext.LOGGER.info("Пакет отправлен");
+
             }
         } catch (Exception e) {
             GlobalContext.LOGGER.error("Failed to process packet from server", e);

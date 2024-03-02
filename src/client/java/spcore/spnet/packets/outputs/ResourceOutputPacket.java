@@ -16,15 +16,16 @@ public class ResourceOutputPacket extends AbstractOutputPacket {
 
     @Override
     protected void PacketWrite(DataOutputStream writer) throws IOException {
-        writer.writeInt(Point.Id.Value);
-        writer.writeInt(Point.Id.Type.value);
-        writer.writeInt((int)Point.Position.x);
-        writer.writeInt((int)Point.Position.y);
-        writer.writeInt((int)Point.Position.z);
+        writer.writeInt(s(Point.Id.Value));
+        writer.writeInt(s(Point.Id.Type.value));
+        writer.writeInt(s(Point.Modifier.value));
+        writer.writeInt(s((int)Point.Position.x));
+        writer.writeInt(s((int)Point.Position.y));
+        writer.writeInt(s((int)Point.Position.z));
     }
 
     @Override
     public int GetHash() {
-        return Objects.hash(Point.Id.Value, Point.Id.Type.value, Point.Position.x, Point.Position.y, Point.Position.z);
+        return Objects.hash(Point.Id.Value, Point.Id.Type.value, Point.Modifier.value, Point.Position.x, Point.Position.y, Point.Position.z);
     }
 }

@@ -5,31 +5,49 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
 import spcore.GlobalContext;
+import spcore.fabric.handlers.WrittenBookHandler;
 import spcore.spnet.SpNetConnectionClient;
-import spcore.spnet.packets.inputs.AbstractInputPacket;
-import spcore.spnet.packets.inputs.InputPacketType;
-import spcore.spnet.packets.inputs.InputPacketsMap;
+import spcore.spnet.models.ResourceId;
+import spcore.spnet.packets.inputs.*;
 import spcore.spnet.packets.outputs.UserPositionOutputPacket;
+import spcore.spnet.resources.SpNetResourceStorage;
+
+import java.util.HashMap;
 
 public class WorldThread extends Thread{
     private final SpNetConnectionClient client;
     private MinecraftClient mc;
 
     private Vec3d lastPosition;
+
+    private final HashMap<ResourceId, Vec3d> resourcesPositions = new HashMap<>();
+    private final HashMap<ResourceId, SoundChannel> soundChannel = new HashMap<>();
+    private final ResourcesResolver resourcesResolver;
     public WorldThread(SpNetConnectionClient client) {
         this.client = client;
         this.mc = MinecraftClient.getInstance();
+        this.resourcesResolver = new ResourcesResolver(client);
     }
 
+    public Vec3d getResourcePos(ResourceId id){
+        if(resourcesPositions.containsKey(id)){
+            return resourcesPositions.get(id);
+        }
+        return new Vec3d(0, 0, 0);
+    }
     @Override
     public void run() {
-        try {
-            while (client.connect){
+        this.resourcesResolver.start();
+        while (client.connect){
+            try {
                 positionUpdate();
-                Thread.sleep(1000);
+                packagesUpdate();
+                WrittenBookHandler.handle(true);
+                Thread.sleep(100);
             }
-        } catch (Exception e) {
-            GlobalContext.LOGGER.error("Failed to process packet from server", e);
+            catch (Exception e){
+                GlobalContext.LOGGER.error("Failed to process packet from server", e);
+            }
         }
     }
 
@@ -46,7 +64,31 @@ public class WorldThread extends Thread{
         var s = client.getOutputThread().addPacket(posPacket);
         if(s){
             lastPosition = pos;
-            GlobalContext.LOGGER.info("add pos " + posPacket.Position.x + " " + posPacket.Position.y + " " + posPacket.Position.z);
         }
     }
+
+    public void packagesUpdate(){
+        while (client.getInputThread().inputPackets.size() != 0){
+            var packet = client.getInputThread().inputPackets.remove();
+            if(packet instanceof ResourcePacket resourcePacket){
+                resourcesPositions.put(resourcePacket.Point.Id, resourcePacket.Point.Position);
+                resourcesResolver.addResource(resourcePacket.Point.Id);
+            }
+            else if(packet instanceof SoundPacket soundPacket){
+                if(soundPacket.soundPacketType == SoundPacketType.Start && !soundChannel.containsKey(soundPacket.resourceId)){
+                    var channel = new SoundChannel(client, resourcesResolver, soundPacket.resourceId, this);
+                    channel.start();
+                    soundChannel.put(soundPacket.resourceId, channel);
+                }
+                else if(soundPacket.soundPacketType == SoundPacketType.End && soundChannel.containsKey(soundPacket.resourceId)){
+                    var channel = soundChannel.get(soundPacket.resourceId);
+                    channel.Stop();
+                    soundChannel.remove(soundPacket.resourceId);
+                }
+            }
+
+        }
+
+    }
+
 }
